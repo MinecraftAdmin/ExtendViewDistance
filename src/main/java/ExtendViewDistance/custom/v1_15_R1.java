@@ -95,10 +95,10 @@ public class v1_15_R1 implements Extend {
             if (chunk == null) return null;
 
             if (chunk instanceof ChunkEmpty) {
-                return ((net.minecraft.server.v1_14_R1.Chunk) chunk).bukkitChunk;
+                return ((net.minecraft.server.v1_15_R1.Chunk) chunk).bukkitChunk;
 
-            } else if (chunk instanceof net.minecraft.server.v1_14_R1.Chunk) {
-                return ((net.minecraft.server.v1_14_R1.Chunk) chunk).bukkitChunk;
+            } else if (chunk instanceof net.minecraft.server.v1_15_R1.Chunk) {
+                return ((net.minecraft.server.v1_15_R1.Chunk) chunk).bukkitChunk;
 
             } else if (chunk instanceof ProtoChunkExtension) {
                 return ((ProtoChunkExtension) chunk).u().bukkitChunk;
