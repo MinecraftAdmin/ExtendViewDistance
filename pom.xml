@@ -126,5 +126,19 @@
             <artifactId>1.14</artifactId>
             <version>R1</version>
         </dependency>
+
+
+        <!-- 1.15 -->
+        <dependency>
+            <groupId>paper</groupId>
+            <artifactId>1.15</artifactId>
+            <version>8</version>
+        </dependency>
+
+        <dependency>
+            <groupId>patched</groupId>
+            <artifactId>1.15</artifactId>
+            <version>R1</version>
+        </dependency>
     </dependencies>
 </project>

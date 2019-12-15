@@ -25,5 +25,7 @@
     <orderEntry type="library" name="Maven: patched:1.13:R2" level="project" />
     <orderEntry type="library" name="Maven: paper:1.14:R1" level="project" />
     <orderEntry type="library" name="Maven: patched:1.14:R1" level="project" />
+    <orderEntry type="library" name="Maven: paper:1.15:8" level="project" />
+    <orderEntry type="library" name="Maven: patched:1.15:R1" level="project" />
   </component>
 </module>

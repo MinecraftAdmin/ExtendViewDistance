@@ -34,6 +34,9 @@ public interface Extend {
         } else if (bukkitVersion.matches("1\\.14\\.[0-9]*-R[0-9]*\\..*")) {
             // 1.14
             return new v1_14_R1();
+        } else if (bukkitVersion.matches("1\\.15\\.[0-9]*-R[0-9]*\\..*")) {
+            // 1.15
+            return new v1_15_R1();
         }
 
         return null; // 不支持的版本
