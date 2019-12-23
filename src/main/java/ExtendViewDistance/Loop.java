@@ -7,14 +7,14 @@ import org.bukkit.entity.Player;
 
 import java.util.*;
 
-public class Loop implements Runnable {
+public class Loop {
 
 
     private boolean             isRun           = false;            // 正在運行中
     private Map<Player, Order>  priorityOrder   = new HashMap<>();  // 擁有優先權重的緩
 
 
-    @Override
+
     public void run() {
         if (isRun) return;
         isRun = true;

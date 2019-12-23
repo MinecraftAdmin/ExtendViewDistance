@@ -70,7 +70,7 @@
                         <!-- 不混淆主類名稱 -->
                         <option>-keep class ExtendViewDistance.Index</option>
                         <!-- 不混淆@表示 -->
-                        <option>-keepattributes Signature</option>
+                        <option>-keepattributes *Annotation*</option>
 
                     </options>
                     <outjar>${project.build.finalName}-pg</outjar>
