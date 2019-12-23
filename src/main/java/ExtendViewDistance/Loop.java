@@ -5,28 +5,74 @@ import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
-/**
- * 玩家顯示更遠的區塊迴圈
- * 與 CreativeCat.server.run.RunSendDistantChunk 相同
- */
-public class Loop {
+public class Loop implements Runnable {
 
 
-    public  static int                    tick                         = 0;
-    private static int                    serverViewDistance           = Bukkit.getViewDistance();          // 取得伺服器視野距離
-    private static int                    extendViewDistance           = Value.extendViewDistance;          // 最高可擴展的視野距離
-    private static int                    tickSendChunkAmount          = Value.tickSendChunkAmount;         // 每個tick可以讀取多少區塊
-    private static int                    playerTickSendChunkAmount    = Value.playerTickSendChunkAmount;   // 每個tick能發送給每個玩家多少個封包
-    private static boolean                playerOutChunkSendUnload     = Value.playerOutChunkSendUnload;    // 玩家離區塊太遠,是唪發送區塊卸除請求給玩家(主要適用於客戶端性能)
-    private static int                    tickChunkExamine             = Value.tickChunkExamine;            // 多少次tick進行1次區塊權重重新檢查
-    private static int                    tickChunkSend                = Value.tickChunkSend;               // 多少次tick進行1次區塊發送
-    private static boolean                isRun                        = false;                             // 正在運行中
-    public  static Map<Player, Order>     priorityOrder                = new HashMap<>();                   // 擁有優先權重的緩
+    private boolean             isRun           = false;            // 正在運行中
+    private Map<Player, Order>  priorityOrder   = new HashMap<>();  // 擁有優先權重的緩
+
+
+    @Override
+    public void run() {
+        if (isRun) return;
+        isRun = true;
+
+        long a = System.currentTimeMillis();
+
+        // 新增 / 重新檢查玩家位置
+        {
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                this.priorityOrder.computeIfAbsent(player, v -> new Order(player));
+            }
+            Set<Player> players = this.priorityOrder.keySet();
+            for (Player player : players) {
+                if (!player.isOnline() || !Bukkit.getWorlds().contains(player.getWorld())) {
+                    // 玩家已離線 / 世界已離線
+                    this.priorityOrder.remove(player);
+                    continue;
+                }
+
+                this.priorityOrder.get(player).move();
+            }
+        }
+
+
+        //System.out.println("a " + (System.currentTimeMillis() - a));
+
+        // 抽選出一定的量, 發送區塊
+        {
+            Object[] players = this.priorityOrder.keySet().toArray();
+            if (players.length != 0) {
+                for (int i = 0, isSend = 0; i < Value.tickSendChunkAmount && isSend < Value.tickSendChunkAmount; ++i) {
+                    Player  player  = (Player) players[(int) (Math.random() * players.length)];
+                    Order   order   = this.priorityOrder.get(player);
+                    Waiting waiting = order.get();
+
+                    if (waiting != null) {
+                        isSend++;
+
+                        Chunk chunk = Value.extend.getChunk(waiting.world, waiting.x, waiting.z);
+                        Value.extend.playerSendViewDistance(player, order.clientViewDistance);
+                        if (chunk != null) {
+                            Value.extend.playerSendChunk(player, chunk);
+                            Value.extend.playerSendChunkLightUpdate(player, chunk);
+                        }
+
+                        //System.out.println("b " + i + " " + (System.currentTimeMillis() - a));
+                    }
+                }
+            }
+        }
+
+        //System.out.println("c " + (System.currentTimeMillis() - a));
+
+        isRun = false;
+    }
+
+
+
 
 
 
@@ -34,183 +80,170 @@ public class Loop {
     /**
      * 表示一個等待加載中的區塊請求
      */
-    private static class WaitingChunk {
+    private static class Waiting {
+        public World    world;
+        public int      x;
+        public int      z;
+        public Status   status = Status.wait;  // 狀態
 
-        public int         x;
-        public int         z;
-        public boolean     isOk = false;  // 預設等待區塊載入
-
-        WaitingChunk(int x, int z) {
-            this.x = x;
-            this.z = z;
+        Waiting(World world, int x, int z) {
+            this.world  = world;
+            this.x      = x;
+            this.z      = z;
         }
     }
+
+
+    /**
+     * 狀態
+     */
+    private enum Status {
+        wait,               // 一切都還沒開始
+        submitted,          // 已提交
+    }
+
+
+
+
+
+
 
 
     /**
      * 優先續控制庫
      */
     private static class Order {
+        private Player                      player;
+        private Map<Long, Waiting>          waitingMap          = new HashMap<>();
+        private Map<Byte, List<Waiting>>    waitingPriority     = new HashMap<>();      // 權重分配
+        private Integer                     nowX                = null;                 // 當前玩家區塊座標X
+        private Integer                     nowZ                = null;                 // 當前玩家區塊座標Z
+        private World                       nowWorld            = null;
+        public  int                         clientViewDistance  = 0;
 
-        Player                                  player;
-        World world;
-        Integer                                 playerX         = null; // 當前玩家區塊座標X
-        Integer                                 playerZ         = null; // 當前玩家區塊座標Z
-        Map<Long, WaitingChunk>                 chunkKey        = new HashMap<>();
-        Map<Integer, ArrayList<WaitingChunk>>   chunkPriority   = new HashMap<>();
 
 
-        Order(Player player) {
-            if (player == null) throw new NullPointerException();
-            this.player = player;
+        public Order(Player player) {
+            this.player     = player;
             move(player); // 初始化
         }
 
 
 
-
-
-
-
-
-
-
-
+        public void move() {
+            move(this.player);
+        }
         public void move(Player player) {
-            move(player.getWorld(), player.getLocation().getBlockX() >> 4, player.getLocation().getBlockZ() >> 4); // 初始化
+            int viewDistance = player.getClientViewDistance(); // 取得客戶端視野距離
+            if (viewDistance > Value.extendViewDistance)
+                viewDistance = Value.extendViewDistance;
+            if (viewDistance < 1)
+                viewDistance = 1;
+            move(player.getWorld(), player.getLocation().getBlockX() >> 4, player.getLocation().getBlockZ() >> 4, viewDistance); // 初始化
         }
         /**
          * 玩家移動座標
          * @param moveX 移動到的新區塊位置X
          * @param moveZ 移動到的新區塊位置Z
          */
-        public void move(World nowWorld, int moveX, int moveZ) {
-
-            if (playerX != null && playerZ != null) {
-                if (playerX == moveX && playerZ == moveZ) {
-                    return; // 沒有改變
-                }
-            }
-            if (world != null) {
-                if (!Bukkit.getWorlds().contains(world)) {
-                    // 世界已經被卸除
-                    chunkKey.clear();
-                    chunkPriority.clear();
-                    this.world = nowWorld;
-                } else if (world != nowWorld) {
-                    // 不同世界
-                    chunkKey.clear();
-                    chunkPriority.clear();
-                    this.world = nowWorld;
-                }
-            } else {
-                this.world = nowWorld;
-            }
+        public void move(World moveWorld, int moveX, int moveZ, int viewDistance) {
+            if (this.nowWorld == null || nowX == null || nowZ == null || this.nowWorld != moveWorld || this.nowX != moveX || this.nowZ != moveZ || this.clientViewDistance != viewDistance) {
+                // 有需要重算權重
 
 
-
-            this.playerX = moveX; // 更新座標X
-            this.playerZ = moveZ; // 更新座標Z
-
-
-            int viewDistance = player.getClientViewDistance(); // 取得客戶端視野距離
-            if (viewDistance > extendViewDistance) viewDistance = extendViewDistance;
-
-
-
-            // 是否有超過範圍的區塊
-            Object[] keys = chunkKey.keySet().toArray();
-            for (int i = 0 ; chunkKey.size() - 1 - i >= 0 ; ++i) {
-                long key = (long) keys[i];
-                int  x   = (int) key;
-                int  z   = (int) (key >> 32);
+                int minX = moveX - viewDistance - 1;
+                int minZ = moveZ - viewDistance - 1;
+                int maxX = moveX + viewDistance + 1;
+                int maxZ = moveZ + viewDistance + 1;
+                int serverViewDistance = Bukkit.getServer().getViewDistance();
+                int minServerX = moveX - serverViewDistance;
+                int minServerZ = moveZ - serverViewDistance;
+                int maxServerX = moveX + serverViewDistance;
+                int maxServerZ = moveZ + serverViewDistance;
 
 
-                if (x >= playerX - serverViewDistance - 1 && x <= playerX + serverViewDistance + 1 && z >= playerZ - serverViewDistance - 1 && z <= playerZ + serverViewDistance + 1) {
-                    // 與原本的視野距離相撞
-                    chunkKey.remove( key );
+                // 超出範圍的移除
+                Object[] arrayWaiting = this.waitingMap.entrySet().toArray();
+                if (arrayWaiting.length > 0)
+                    for (int i = this.waitingMap.size() - 1 ; i >= 0 ; i-- ) {
+                        Map.Entry<Long, Waiting> entry = (Map.Entry<Long, Waiting>) arrayWaiting[i];
+                        long    key = entry.getKey();
+                        int     x   = (int) key;
+                        int     z   = (int) (key >> 32);
 
-                } else if (x < playerX - viewDistance || x > playerX + viewDistance || z < playerZ - viewDistance || z > playerZ + viewDistance) {
-                    // 超出擴展的視野範圍
-                    chunkKey.remove( key );
-                    if (playerOutChunkSendUnload) {
-                        try {
-                            Value.extend.playerSendUnloadChunk(player, x, z); // 請求卸除區塊
-                        } catch (Exception ex) {
-                            // 不報錯誤
+                        if (nowWorld != entry.getValue().world) {
+                            // 已經切換世界
+                            this.waitingMap.remove(key);
+                        } else if (x < minX || x > maxX || z < minZ || z > maxZ) {
+                            // 超出插件的擴展距離
+                            this.waitingMap.remove(key);
+                            //Value.extend.playerSendUnloadChunk(player, x, z);
+                        } else if (x >= minServerX && x <= maxServerX && z >= minServerZ && z <= maxServerZ) {
+                            // 在伺服器的距離內
+                            Waiting waiting = this.waitingMap.get(key);
+                            if (waiting != null) {
+                            } else {
+                                waiting = new Waiting(moveWorld, x, z);
+                                this.waitingMap.put(key, waiting);
+                            }
+                            waiting.status = Status.submitted;
                         }
                     }
 
+
+                // 緩存視野距離內全部區塊
+                for (int x = minX ; x < maxX ; ++x) {
+                    for (int z = minZ ; z < maxZ ; ++z) {
+
+                        if (x >= minServerX && x <= maxServerX && z >= minServerZ && z <= maxServerZ) continue; // 在伺服器的距離內
+
+                        long chunkKey = Chunk.getChunkKey(x, z);
+                        // 如果沒有資料的話則新增
+                        if (!this.waitingMap.containsKey(chunkKey)) waitingMap.put(chunkKey, new Waiting(moveWorld, x, z));
+                    }
                 }
-            }
 
 
-            // 重新計算方塊區塊距離權重
-            chunkPriority.clear();
-            for (int x = playerX - viewDistance; x <= playerX + viewDistance; ++x) {
-                for (int z = playerZ - viewDistance; z <= playerZ + viewDistance; ++z) {
-
-                    long key = Chunk.getChunkKey(x, z);  // 計算方塊key
-
-
-                    if (x >= playerX - serverViewDistance - 1 && x <= playerX + serverViewDistance + 1 && z >= playerZ - serverViewDistance - 1 && z <= playerZ + serverViewDistance + 1) {
-                        // 與原本的視野距離相撞
-                        chunkKey.remove( key );
-                        continue;
-                    }
-
-
-                    WaitingChunk waitingChunk = chunkKey.get( key );        // 先從緩存請求
-
-
-                    if (waitingChunk == null) {
-                        // 還沒有緩存
-                        waitingChunk = new WaitingChunk(x, z);
-                        chunkKey.put(key, waitingChunk);
-
-                    } else {
-                        // 存在緩存
-                        if (waitingChunk.isOk) {
-                            continue; // 已經完成
-                        }
-                    }
-
+                // 計算權重
+                this.waitingPriority.clear();
+                this.waitingMap.forEach((key, value) -> {
+                    int x   = key.intValue();
+                    int z   = (int) (key >> 32);
 
                     // 計算距離權重
-                    int distance = Math.abs(playerX - x) + Math.abs(playerZ - z);
-                    // 初始化
-                    if (!chunkPriority.containsKey(distance)) {
-                        chunkPriority.put(distance, new ArrayList<>());
-                    }
+                    byte priority = (byte) (Math.abs(moveX - x) + Math.abs(moveZ - z));
+
+                    List<Waiting> waitingList = this.waitingPriority.computeIfAbsent(priority, k -> new ArrayList<>());
+                    waitingList.add(value);
+                });
 
 
-                    chunkPriority.get(distance).add( waitingChunk );
-                }
+                this.nowX       = moveX; // 更新座標X
+                this.nowZ       = moveZ; // 更新座標Z
+                this.nowWorld   = moveWorld;
+
+                this.clientViewDistance = viewDistance;
             }
         }
+
 
 
         /**
          * 取得最優先的請求
          * @return 請求
          */
-        public WaitingChunk get() {
+        public Waiting get() {
+            byte size = (byte) this.clientViewDistance;
+            for (byte i = 0 ; i < size ; i++) {
+                List<Waiting> waitingList = this.waitingPriority.get(i);
+                if (waitingList == null || waitingList.size() == 0) continue;
 
-            // 從最優先開始取得
-            if (chunkPriority != null) {
-                for (Integer distance : new TreeMap<>(chunkPriority).navigableKeySet()) {
-
-                    ArrayList<WaitingChunk> prioritys = chunkPriority.get(distance);
-                    for (int i = 0 ; prioritys.size() - 1 - i >= 0 ; ++i) {
-                        WaitingChunk waitingChunk = prioritys.get(i);
-
-                        if (waitingChunk.isOk) {
-                            prioritys.remove(waitingChunk);
-                            continue; // 已經完成
-                        }
-
-                        prioritys.remove( waitingChunk );
-                        return waitingChunk;
+                for (Waiting waiting : waitingList) {
+                    if (waiting.status == Status.wait) {
+                        //System.out.println("s1:" + this.waitingPriority.size() + " s2" + this.waitingMap.size() + " x:" + waiting.x + " z:" + waiting.z);
+                        // 有找到了, 返回
+                        waiting.status = Status.submitted;  // 狀態為已提交
+                        return waiting;
                     }
                 }
             }
@@ -218,119 +251,11 @@ public class Loop {
         }
 
 
+
         public void clear() {
-            chunkKey.clear();
-            chunkPriority.clear();
+            this.waitingPriority.clear();
+            this.waitingMap.clear();
         }
     }
-
-
-
-
-    public static void run() {
-    }
-
-
-    public static void runAsync() {
-
-        //if (Value.tickThreadTiem > Value.lagLight) return; // 已經輕微卡頓
-
-
-
-        if (isRun) return;
-        isRun = true;
-        tick++;
-
-
-        try {
-            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            // 加載區塊請求
-            // 每 5 tick 運行一次
-
-
-            if (tick % tickChunkExamine == 0) {
-
-                Map<Player, Integer> playerTickSend = new HashMap<>();                          // 避免在同個tick發送太多區塊給玩家
-                int                  tickSend       = tickSendChunkAmount * tickChunkExamine;   // 每個tick允許發送多少區塊
-                Object[]             players        = priorityOrder.keySet().toArray();
-                int                  repeat         = players.length * tickChunkExamine;
-
-
-                for (int r = 0 ; r < repeat ; ++r) {
-                    if (tickSend < 0) break; // 等待下一個tick在運行這裡
-
-                    Player       player = (Player)  players[ (int) (Math.random() * players.length) ];
-                    Integer      tickSendAmount = playerTickSend.get(player);
-                    if (tickSendAmount == null ) tickSendAmount = 0;
-                    if (tickSendAmount >= playerTickSendChunkAmount * tickChunkExamine) continue; // 同個tick發送太多區塊給玩家了
-
-                    Order        order = priorityOrder.get(player);
-                    if (order == null) continue;
-
-                    WaitingChunk waiting = order.get();
-                    if (waiting == null) continue;
-
-                    World   world           = player.getWorld();
-                    int     chunkX          = waiting.x;
-                    int     chunkZ          = waiting.z;
-                    int     viewDistance    = player.getClientViewDistance();
-                    if (viewDistance > extendViewDistance) viewDistance = extendViewDistance;
-
-
-                    // 當前狀態
-                    if (!waiting.isOk) {
-                        Chunk chunk =Value.extend.getChunk(world, chunkX, chunkZ); // 取得方塊
-                        boolean noException = true; // 如果沒有錯誤
-
-                        if (chunk != null) {
-                            try {
-                                Value.extend.playerSendViewDistance(player, viewDistance);  // 更新玩家應該要顯示的視野距離
-                                Value.extend.playerSendChunk(player, chunk);                // 發送區塊給玩家
-                                Value.extend.sendChunkLightUpdate(player, chunk);           // 發送光照更新給玩家
-                            } catch (Exception ex) {
-                                // 不報錯誤
-                                noException = false;
-                            }
-                        }
-
-                        if (noException) {
-                            waiting.isOk = true;
-                            tickSend--;
-                            playerTickSend.put(player, tickSendAmount + 1);
-                        }
-                    }
-                }
-            }
-
-
-            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            // 處理玩家應該要加載的區塊
-
-
-            if (tick % tickChunkSend == 0) {
-                // 循環遍布所有線上玩家
-                // 並計算附近需要等待發送給玩家的區塊
-                for (Player player : Bukkit.getOnlinePlayers()) {
-                    /// 加入到緩存中
-                    if (!priorityOrder.containsKey(player)) {
-                        priorityOrder.put(player, new Order(player));
-                    } else {
-                        priorityOrder.get(player).move(player);
-                    }
-                }
-            }
-
-
-            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
-
-        isRun = false;
-    }
-
 
 }

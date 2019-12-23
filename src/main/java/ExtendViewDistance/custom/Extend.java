@@ -18,7 +18,13 @@ public interface Extend {
     /** 發送區塊卸除 */
     void playerSendUnloadChunk(Player player, int x, int z);
     /** 發送光照更新 */
-    void sendChunkLightUpdate(Player player, Chunk chunk);
+    void playerSendChunkLightUpdate(Player player, Chunk chunk);
+    /** 異步取得區塊病發送 */
+    //void playerAsyncLoadSendChunk(Player player, World world, int x, int z);
+    /** 設置龍頭視野距離 */
+    //void setSpigotViewDistance(World world, int viewDistance);
+    /** 替換玩家連線庫 */
+    void replacePlayerConnection(Player player);
 
     /**
      * 取得當前版本能使用的擴展

@@ -1,10 +1,10 @@
 package ExtendViewDistance.custom;
 
-import ExtendViewDistance.custom.Extend;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.util.AttributeKey;
+import io.netty.util.concurrent.GenericFutureListener;
 import net.minecraft.server.v1_15_R1.*;
 import org.bukkit.Chunk;
 import org.bukkit.World;
@@ -30,6 +30,12 @@ public class v1_15_R1 implements Extend {
     /** 取得世界類別 */
     private net.minecraft.server.v1_15_R1.Chunk getNMSChunk(Chunk chunk) {
         return ((CraftChunk) chunk).getHandle();
+    }
+    /**
+     * 創建區塊
+     */
+    private net.minecraft.server.v1_15_R1.Chunk createNMSChunk(World world, ProtoChunk chunk) {
+        return new net.minecraft.server.v1_15_R1.Chunk(getNMSWorld(world), chunk);
     }
 
 
@@ -86,11 +92,13 @@ public class v1_15_R1 implements Extend {
     }
 
 
+
+
     /** 取得區塊 */
     public Chunk getChunk(World world, int x, int z) {
 
-        synchronized (getNMSWorld(world)) {
-            IChunkAccess chunk = getNMSWorld(world).getChunkProvider().getChunkAt(x, z, ChunkStatus.FULL, true);
+        synchronized (this.getNMSWorld(world)) {
+            IChunkAccess chunk = this.getNMSWorld(world).getChunkProvider().getChunkAt(x, z, ChunkStatus.SURFACE, true);
 
             if (chunk == null) return null;
 
@@ -109,35 +117,62 @@ public class v1_15_R1 implements Extend {
     }
 
 
+
+
     /** 發送視野距離 */
     public synchronized void playerSendViewDistance(Player player, int distance) {
-
-        playerSendPacket(player, new PacketPlayOutViewDistance(distance)); // 發送視野距離
+        playerSendPacket(player, new PacketPlayOutViewDistance(distance)); // 發送視野距離x
     }
 
 
     /** 發送區塊 */
     public void playerSendChunk(Player player, Chunk chunk) {
-
+        playerSendChunk(player, getNMSChunk(chunk));
+    }
+    private void playerSendChunk(Player player, net.minecraft.server.v1_15_R1.Chunk chunk) {
         // 65535 + 1 = 65536 = 16 * 256 * 16
-        synchronized(getNMSChunk(chunk)) {
-            playerSendPacket(player, new PacketPlayOutMapChunk(getNMSChunk(chunk), 65535, true)); // 發送區塊
-        }
+        playerSendPacket(player, new PacketPlayOutMapChunk(chunk, 65535, true)); // 發送區塊
     }
 
 
     /** 發送區塊卸除 */
     public void playerSendUnloadChunk(Player player, int x, int z) {
-
         playerSendPacket(player, new PacketPlayOutUnloadChunk(x, z)); // 發送區塊卸除
     }
 
 
     /** 發送光照更新 */
-    public void sendChunkLightUpdate(Player player, Chunk chunk) {
+    public void playerSendChunkLightUpdate(Player player, Chunk chunk) {
+        playerSendChunkLightUpdate(player, getNMSChunk(chunk));
+    }
+    private void playerSendChunkLightUpdate(Player player, net.minecraft.server.v1_15_R1.Chunk chunk) {
+        LightEngine lightEngine = chunk.getWorld().getChunkProvider().getLightEngine();         // 取得光照引擎
+        playerSendPacket(player, new PacketPlayOutLightUpdate(chunk.getPos(), lightEngine));    // 更新光照
+    }
 
-        LightEngine lightEngine = getNMSChunk(chunk).getWorld().getChunkProvider().getLightEngine();                                // 取得光照引擎
-        playerSendPacket(player, new PacketPlayOutLightUpdate(new ChunkCoordIntPair(chunk.getX(), (chunk.getZ())), lightEngine));   // 更新光照
+
+    /**
+     * 替換玩家連線庫
+     */
+    public void replacePlayerConnection(Player player) {
+        EntityPlayer entityPlayer = getNMSPlayer(player);
+        entityPlayer.playerConnection = new PlayerConnection(entityPlayer.getMinecraftServer(), entityPlayer.playerConnection.networkManager, entityPlayer);
+    }
+
+
+
+
+
+    public static class PlayerConnection extends net.minecraft.server.v1_15_R1.PlayerConnection {
+        public PlayerConnection(MinecraftServer minecraftserver, NetworkManager networkmanager, EntityPlayer entityplayer) {
+            super(minecraftserver, networkmanager, entityplayer);
+        }
+
+        @Override
+        public void sendPacket(Packet<?> packet) {
+            if (packet instanceof PacketPlayOutUnloadChunk) return; // 取消卸載區塊
+            this.a(packet, (GenericFutureListener)null);
+        }
     }
 
 
