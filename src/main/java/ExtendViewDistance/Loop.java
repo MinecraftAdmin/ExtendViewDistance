@@ -177,7 +177,7 @@ public class Loop {
                         } else if (x < minX || x > maxX || z < minZ || z > maxZ) {
                             // 超出插件的擴展距離
                             this.waitingMap.remove(key);
-                            //Value.extend.playerSendUnloadChunk(player, x, z);
+                            Value.extend.playerSendUnloadChunk(player, x, z);
                         } else if (x >= minServerX && x <= maxServerX && z >= minServerZ && z <= maxServerZ) {
                             // 在伺服器的距離內
                             Waiting waiting = this.waitingMap.get(key);
