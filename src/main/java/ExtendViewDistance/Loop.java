@@ -10,8 +10,8 @@ import java.util.*;
 public class Loop {
 
 
-    private boolean             isRun           = false;            // 正在運行中
-    private Map<Player, Order>  priorityOrder   = new HashMap<>();  // 擁有優先權重的緩
+    private         boolean             isRun           = false;            // 正在運行中
+    private final   Map<Player, Order>  priorityOrder   = new HashMap<>();  // 擁有優先權重的緩
 
 
 
@@ -19,52 +19,61 @@ public class Loop {
         if (isRun) return;
         isRun = true;
 
-        long a = System.currentTimeMillis();
+        try {
+            synchronized (priorityOrder) {
 
-        // 新增 / 重新檢查玩家位置
-        {
-            for (Player player : Bukkit.getOnlinePlayers()) {
-                this.priorityOrder.computeIfAbsent(player, v -> new Order(player));
-            }
-            Set<Player> players = this.priorityOrder.keySet();
-            for (Player player : players) {
-                if (!player.isOnline() || !Bukkit.getWorlds().contains(player.getWorld())) {
-                    // 玩家已離線 / 世界已離線
-                    this.priorityOrder.remove(player);
-                    continue;
-                }
-
-                this.priorityOrder.get(player).move();
-            }
-        }
-
-
-        //System.out.println("a " + (System.currentTimeMillis() - a));
-
-        // 抽選出一定的量, 發送區塊
-        {
-            Object[] players = this.priorityOrder.keySet().toArray();
-            if (players.length != 0) {
-                for (int i = 0, isSend = 0; i < Value.tickSendChunkAmount && isSend < Value.tickSendChunkAmount; ++i) {
-                    Player  player  = (Player) players[(int) (Math.random() * players.length)];
-                    Order   order   = this.priorityOrder.get(player);
-                    Waiting waiting = order.get();
-
-                    if (waiting != null) {
-                        isSend++;
-
-                        Chunk chunk = Value.extend.getChunk(waiting.world, waiting.x, waiting.z);
-                        Value.extend.playerSendViewDistance(player, order.clientViewDistance);
-                        if (chunk != null) {
-                            Value.extend.playerSendChunk(player, chunk);
-                            Value.extend.playerSendChunkLightUpdate(player, chunk);
+                // 新增 / 重新檢查玩家位置
+                {
+                    for (Player player : Bukkit.getOnlinePlayers()) {
+                        this.priorityOrder.computeIfAbsent(player, v -> new Order(player));
+                    }
+                    Set<Player> players = this.priorityOrder.keySet();
+                    for (Player player : players) {
+                        if (!player.isOnline() || !Bukkit.getWorlds().contains(player.getWorld())) {
+                            // 玩家已離線 / 世界已離線
+                            this.priorityOrder.remove(player);
+                            continue;
                         }
 
-                        //System.out.println("b " + i + " " + (System.currentTimeMillis() - a));
+                        this.priorityOrder.get(player).move();
                     }
                 }
+
+
+                //System.out.println("a " + (System.currentTimeMillis() - a));
+
+                // 抽選出一定的量, 發送區塊
+                {
+                    Object[] players = this.priorityOrder.keySet().toArray();
+                    if (players.length != 0) {
+                        for (int i = 0, isSend = 0; i < Value.tickSendChunkAmount && isSend < Value.tickSendChunkAmount; ++i) {
+                            Player  player  = (Player) players[(int) (Math.random() * players.length)];
+                            Order   order   = this.priorityOrder.get(player);
+                            Waiting waiting = order.get();
+
+                            if (waiting != null) {
+                                isSend++;
+
+                                Chunk chunk = Value.extend.getChunk(waiting.world, waiting.x, waiting.z);
+                                Value.extend.playerSendViewDistance(player, order.clientViewDistance);
+                                if (chunk != null) {
+                                    Value.extend.playerSendChunk(player, chunk);
+                                    Value.extend.playerSendChunkLightUpdate(player, chunk);
+                                }
+
+                                //System.out.println("b " + i + " " + (System.currentTimeMillis() - a));
+                            }
+                        }
+                    }
+                }
+
+
+
+
             }
+        } catch (Exception ex) {
         }
+        //long a = System.currentTimeMillis();
 
         //System.out.println("c " + (System.currentTimeMillis() - a));
 
