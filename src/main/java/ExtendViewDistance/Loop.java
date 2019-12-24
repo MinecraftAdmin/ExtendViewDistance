@@ -207,9 +207,6 @@ public class Loop {
                     }
 
 
-                if (viewDistance < Value.extendViewDistance) return;
-
-
                 // 緩存視野距離內全部區塊
                 for (int x = minX ; x < maxX ; ++x) {
                     for (int z = minZ ; z < maxZ ; ++z) {
