@@ -140,7 +140,7 @@ public class Loop {
 
 
         public Order(Player player) {
-            this.player     = player;
+            this.player = player;
             move(player); // 初始化
         }
 
@@ -205,6 +205,9 @@ public class Loop {
                             waiting.status = Status.submitted;
                         }
                     }
+
+
+                if (viewDistance < Value.extendViewDistance) return;
 
 
                 // 緩存視野距離內全部區塊
