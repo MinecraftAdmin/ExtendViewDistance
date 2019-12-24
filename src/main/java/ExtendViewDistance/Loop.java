@@ -3,6 +3,7 @@ package ExtendViewDistance;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.World;
+import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import java.util.*;
@@ -24,18 +25,23 @@ public class Loop {
 
                 // 新增 / 重新檢查玩家位置
                 {
-                    for (Player player : Bukkit.getOnlinePlayers()) {
-                        this.priorityOrder.computeIfAbsent(player, v -> new Order(player));
-                    }
-                    Set<Player> players = this.priorityOrder.keySet();
-                    for (Player player : players) {
-                        if (!player.isOnline() || !Bukkit.getWorlds().contains(player.getWorld())) {
-                            // 玩家已離線 / 世界已離線
-                            this.priorityOrder.remove(player);
-                            continue;
+                    synchronized (Bukkit.getOnlinePlayers()) {
+                        Collection<? extends Player> playerCollection = Bukkit.getOnlinePlayers();
+                        for (Player player : playerCollection) {
+                            this.priorityOrder.computeIfAbsent(player, v -> new Order(player));
                         }
 
-                        this.priorityOrder.get(player).move();
+                        Set<Player> players     = this.priorityOrder.keySet();
+                        List<World> worldList   = Bukkit.getWorlds();
+                        for (Player player : players) {
+                            if (!player.isOnline() || !worldList.contains(player.getWorld())) {
+                                // 玩家已離線 / 世界已離線
+                                this.priorityOrder.remove(player);
+                                continue;
+                            }
+
+                            this.priorityOrder.get(player).move();
+                        }
                     }
                 }
 
@@ -72,6 +78,7 @@ public class Loop {
 
             }
         } catch (Exception ex) {
+            ex.fillInStackTrace();
         }
         //long a = System.currentTimeMillis();
 
