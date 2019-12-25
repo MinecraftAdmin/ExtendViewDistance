@@ -182,6 +182,7 @@ public class Loop {
                 Object[] arrayWaiting = this.waitingMap.entrySet().toArray();
                 if (arrayWaiting.length > 0)
                     for (int i = this.waitingMap.size() - 1 ; i >= 0 ; i-- ) {
+
                         Map.Entry<Long, Waiting> entry = (Map.Entry<Long, Waiting>) arrayWaiting[i];
                         long    key = entry.getKey();
                         int     x   = (int) key;
@@ -211,11 +212,22 @@ public class Loop {
                 for (int x = minX ; x < maxX ; ++x) {
                     for (int z = minZ ; z < maxZ ; ++z) {
 
-                        if (x >= minServerX && x <= maxServerX && z >= minServerZ && z <= maxServerZ) continue; // 在伺服器的距離內
-
                         long chunkKey = Chunk.getChunkKey(x, z);
-                        // 如果沒有資料的話則新增
-                        if (!this.waitingMap.containsKey(chunkKey)) waitingMap.put(chunkKey, new Waiting(moveWorld, x, z));
+                        if (x >= minServerX && x <= maxServerX && z >= minServerZ && z <= maxServerZ) {
+                            // 在伺服器的距離內
+                            Waiting waiting = this.waitingMap.get(chunkKey);
+                            if (waiting != null) {
+                            } else {
+                                waiting = new Waiting(moveWorld, x, z);
+                                this.waitingMap.put(chunkKey, waiting);
+                            }
+                            waiting.status = Status.submitted;
+
+                        } else {
+                            // 如果沒有資料的話則新增
+                            if (!this.waitingMap.containsKey(chunkKey)) waitingMap.put(chunkKey, new Waiting(moveWorld, x, z));
+
+                        }
                     }
                 }
 
