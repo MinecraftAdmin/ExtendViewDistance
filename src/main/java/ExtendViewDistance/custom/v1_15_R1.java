@@ -96,7 +96,9 @@ public class v1_15_R1 implements Extend {
         } else {
 
          */
+        synchronized (getNMSPlayer(player).playerConnection.networkManager) {
             getNMSPlayer(player).playerConnection.networkManager.sendPacket(packet);
+        }
         //}
     }
 
