@@ -1,5 +1,8 @@
 package ExtendViewDistance.custom;
 
+import com.destroystokyo.paper.PaperConfig;
+import com.destroystokyo.paper.antixray.ChunkPacketBlockControllerAntiXray;
+import com.destroystokyo.paper.antixray.ChunkPacketInfo;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
@@ -14,6 +17,7 @@ import org.bukkit.entity.Player;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class v1_15_R1 implements Extend {
 
@@ -148,7 +152,4 @@ public class v1_15_R1 implements Extend {
         LightEngine lightEngine = chunk.getWorld().getChunkProvider().getLightEngine();         // 取得光照引擎
         playerSendPacket(player, new PacketPlayOutLightUpdate(chunk.getPos(), lightEngine));    // 更新光照
     }
-
-
-
 }
