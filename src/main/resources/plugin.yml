@@ -1,4 +1,5 @@
 name: ExtendViewDistance
 version: ${project.version}
 main: ExtendViewDistance.Index
+depend: [PacketEventCatAPI]
 authors: [XUAN_Cat]

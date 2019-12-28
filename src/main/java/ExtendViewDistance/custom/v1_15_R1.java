@@ -155,29 +155,5 @@ public class v1_15_R1 implements Extend {
     }
 
 
-    /**
-     * 替換玩家連線庫
-     */
-    public void replacePlayerConnection(Player player) {
-        EntityPlayer entityPlayer = getNMSPlayer(player);
-        entityPlayer.playerConnection = new PlayerConnection(entityPlayer.getMinecraftServer(), entityPlayer.playerConnection.networkManager, entityPlayer);
-    }
-
-
-
-
-
-    public static class PlayerConnection extends net.minecraft.server.v1_15_R1.PlayerConnection {
-        public PlayerConnection(MinecraftServer minecraftserver, NetworkManager networkmanager, EntityPlayer entityplayer) {
-            super(minecraftserver, networkmanager, entityplayer);
-        }
-
-        @Override
-        public void sendPacket(Packet<?> packet) {
-            if (packet instanceof PacketPlayOutUnloadChunk) return; // 取消卸載區塊
-            this.a(packet, (GenericFutureListener)null);
-        }
-    }
-
 
 }

@@ -8,6 +8,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.world.WorldInitEvent;
+import xuan.cat.PacketEventCatAPI.api.event.packet.ServerUnloadChunkPacketEvent;
 
 public class Event implements Listener {
 
@@ -23,11 +24,11 @@ public class Event implements Listener {
 
 
     /**
-     * @param event 玩家登入時
+     * @param event 區塊卸除封包
      */
     @EventHandler(priority = EventPriority.NORMAL)
-    public void event(PlayerJoinEvent event) {
-        Value.extend.replacePlayerConnection(event.getPlayer());
+    public void event(ServerUnloadChunkPacketEvent event) {
+        event.setCancelled(true);
     }
 
 

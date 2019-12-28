@@ -23,8 +23,6 @@ public interface Extend {
     //void playerAsyncLoadSendChunk(Player player, World world, int x, int z);
     /** 設置龍頭視野距離 */
     //void setSpigotViewDistance(World world, int viewDistance);
-    /** 替換玩家連線庫 */
-    void replacePlayerConnection(Player player);
 
     /**
      * 取得當前版本能使用的擴展
@@ -34,13 +32,14 @@ public interface Extend {
 
         String bukkitVersion = Bukkit.getBukkitVersion();
 
-        if (bukkitVersion.matches("1\\.13.*")) {
+        //if (bukkitVersion.matches("1\\.13.*")) {
             // 1.13
-            return new v1_13_R2();
-        } else if (bukkitVersion.matches("1\\.14.*")) {
-            // 1.14
-            return new v1_14_R1();
-        } else if (bukkitVersion.matches("1\\.15.*")) {
+        //    return new v1_13_R2();
+        //} else if (bukkitVersion.matches("1\\.14.*")) {
+        //    // 1.14
+        //    return new v1_14_R1();
+        /*} else */
+        if (bukkitVersion.matches("1\\.15.*\\-R0\\.1.*")) {
             // 1.15
             return new v1_15_R1();
         }
