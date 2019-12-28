@@ -1,24 +1,12 @@
 package ExtendViewDistance.custom;
 
-import ExtendViewDistance.Value;
-import com.destroystokyo.paper.antixray.ChunkPacketBlockControllerAntiXray;
-import com.destroystokyo.paper.antixray.ChunkPacketInfoAntiXray;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
-import io.netty.util.AttributeKey;
 import net.minecraft.server.v1_15_R1.*;
-import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_15_R1.CraftChunk;
 import org.bukkit.craftbukkit.v1_15_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
-
-import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class v1_15_R1 implements Extend {
 
@@ -38,9 +26,9 @@ public class v1_15_R1 implements Extend {
     /**
      * 創建區塊
      */
-    private net.minecraft.server.v1_15_R1.Chunk createNMSChunk(World world, ProtoChunk chunk) {
-        return new net.minecraft.server.v1_15_R1.Chunk(getNMSWorld(world), chunk);
-    }
+    //private net.minecraft.server.v1_15_R1.Chunk createNMSChunk(World world, ProtoChunk chunk) {
+    //    return new net.minecraft.server.v1_15_R1.Chunk(getNMSWorld(world), chunk);
+    //}
 
 
     /** 發送封包 */
