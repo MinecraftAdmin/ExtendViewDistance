@@ -1,8 +1,5 @@
 package ExtendViewDistance.custom;
 
-import com.destroystokyo.paper.PaperConfig;
-import com.destroystokyo.paper.antixray.ChunkPacketBlockControllerAntiXray;
-import com.destroystokyo.paper.antixray.ChunkPacketInfo;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
