@@ -10,6 +10,7 @@ public class Value {
     public static Extend    extend;
     public static int       extendViewDistance;
     public static int       tickSendChunkAmount;
+    //public static boolean   sendChunkAsync;
     //public static int       playerTickSendChunkAmount;
     //public static boolean   playerOutChunkSendUnload;
     //public static int       tickChunkExamine;
