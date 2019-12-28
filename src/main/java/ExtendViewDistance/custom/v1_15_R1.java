@@ -1,10 +1,14 @@
 package ExtendViewDistance.custom;
 
+import ExtendViewDistance.Value;
+import com.destroystokyo.paper.antixray.ChunkPacketBlockControllerAntiXray;
+import com.destroystokyo.paper.antixray.ChunkPacketInfoAntiXray;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.util.AttributeKey;
 import net.minecraft.server.v1_15_R1.*;
+import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_15_R1.CraftChunk;
@@ -41,7 +45,8 @@ public class v1_15_R1 implements Extend {
 
     /** 發送封包 */
     private void playerSendPacket(Player player, Packet packet) {
-
+        getNMSPlayer(player).playerConnection.sendPacket(packet);
+/*
         //synchronized (getNMSPlayer(player)) {
         synchronized (getNMSPlayer(player).playerConnection.networkManager) {
 
@@ -89,6 +94,8 @@ public class v1_15_R1 implements Extend {
             }
         }
         //}
+
+ */
     }
 
 
@@ -132,6 +139,11 @@ public class v1_15_R1 implements Extend {
     private void playerSendChunk(Player player, net.minecraft.server.v1_15_R1.Chunk chunk) {
         // 65535 + 1 = 65536 = 16 * 256 * 16
         playerSendPacket(player, new PacketPlayOutMapChunk(chunk, 65535, true)); // 發送區塊
+        //Bukkit.getScheduler().runTask(Value.plugin, () -> {
+
+        //    Bukkit.getScheduler().runTaskAsynchronously(Value.plugin, () -> {
+        //    });
+        //});
     }
 
 
