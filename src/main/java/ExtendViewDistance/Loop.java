@@ -5,6 +5,8 @@ import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
+import xuan.cat.NMSCatLib.Extend;
+import xuan.cat.NMSCatLib.api.world.ExtendChunk;
 import xuan.cat.PacketEventCatAPI.Packet;
 
 import java.util.*;
@@ -61,7 +63,7 @@ public class Loop {
                             if (waiting != null) {
                                 isSend++;
 
-                                Chunk chunk = Value.extend.getChunk(waiting.world, waiting.x, waiting.z);
+                                Chunk chunk = Extend.World(waiting.world).getChunk(ExtendChunk.Status.SURFACE, waiting.x, waiting.z, false);
                                 Packet.callServerViewDistancePacket(player, order.clientViewDistance);
                                 if (chunk != null) {
                                     Packet.callServerMapChunkPacket(player, chunk);
