@@ -1,9 +1,7 @@
 package ExtendViewDistance;
 
-import ExtendViewDistance.custom.Extend;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -12,13 +10,6 @@ public final class Index extends JavaPlugin {
     @Override
     public void onEnable() {
 
-        // 取得當前版本能使用的擴展
-        Value.extend = Extend.getExtend();
-        if (Value.extend == null) {
-            getLogger().warning(ChatColor.RED + "Error! Unsupported MC version:" + Bukkit.getBukkitVersion()); // 錯誤,不支持的MC版本
-            Bukkit.getPluginManager().disablePlugin(this, false); // 停用插件
-            return;
-        }
 
 
         // 初始化配置文件
