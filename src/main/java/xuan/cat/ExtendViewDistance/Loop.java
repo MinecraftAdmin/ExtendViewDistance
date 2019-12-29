@@ -214,7 +214,7 @@ public class Loop {
                 for (int x = minX ; x < maxX ; ++x) {
                     for (int z = minZ ; z < maxZ ; ++z) {
 
-                        long chunkKey = Chunk.getChunkKey(x, z);
+                        long chunkKey = (long) x & 4294967295L | ((long) z & 4294967295L) << 32;
                         if (x >= minServerX && x <= maxServerX && z >= minServerZ && z <= maxServerZ) {
                             // 在伺服器的距離內
                             Waiting waiting = this.waitingMap.get(chunkKey);
