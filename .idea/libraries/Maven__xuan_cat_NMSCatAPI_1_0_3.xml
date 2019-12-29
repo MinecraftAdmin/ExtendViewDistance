@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: xuan.cat:NMSCatAPI:1.0.3">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/xuan/cat/NMSCatAPI/1.0.3/NMSCatAPI-1.0.3.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/xuan/cat/NMSCatAPI/1.0.3/NMSCatAPI-1.0.3-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/xuan/cat/NMSCatAPI/1.0.3/NMSCatAPI-1.0.3-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

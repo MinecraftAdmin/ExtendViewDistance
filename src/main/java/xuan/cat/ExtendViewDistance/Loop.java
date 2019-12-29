@@ -62,7 +62,7 @@ public class Loop {
                             if (waiting != null) {
                                 isSend++;
 
-                                Chunk chunk = Extend.World(waiting.world).getChunk(ExtendChunk.Status.SURFACE, waiting.x, waiting.z, false);
+                                Chunk chunk = Extend.World(waiting.world).getChunk(ExtendChunk.Status.SURFACE, waiting.x, waiting.z, true);
                                 Packet.callServerViewDistancePacket(player, order.clientViewDistance);
                                 if (chunk != null) {
                                     Packet.callServerMapChunkPacket(player, chunk);

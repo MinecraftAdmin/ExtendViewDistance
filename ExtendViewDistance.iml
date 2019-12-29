@@ -22,7 +22,7 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Maven: xuan.cat:PacketEventCatAPI:1.1.2" level="project" />
-    <orderEntry type="library" name="Maven: xuan.cat:NMSCatLib:1.0.0" level="project" />
+    <orderEntry type="library" name="Maven: xuan.cat:NMSCatAPI:1.0.3" level="project" />
     <orderEntry type="library" name="Maven: paper:1.15:8" level="project" />
     <orderEntry type="library" name="Maven: patched:1.15:R1" level="project" />
   </component>

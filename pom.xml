@@ -109,8 +109,8 @@
 
         <dependency>
             <groupId>xuan.cat</groupId>
-            <artifactId>NMSCatLib</artifactId>
-            <version>1.0.0</version>
+            <artifactId>NMSCatAPI</artifactId>
+            <version>1.0.3</version>
         </dependency>
 
 
