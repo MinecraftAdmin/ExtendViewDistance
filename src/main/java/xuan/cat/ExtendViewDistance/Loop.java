@@ -4,8 +4,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import xuan.cat.NMSCatLib.Extend;
-import xuan.cat.NMSCatLib.api.world.ExtendChunk;
+import xuan.cat.NMSCatAPI.Extend;
+import xuan.cat.NMSCatAPI.api.world.ExtendChunk;
 import xuan.cat.PacketEventCatAPI.Packet;
 
 import java.util.*;
