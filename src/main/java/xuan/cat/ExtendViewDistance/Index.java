@@ -11,6 +11,8 @@ public final class Index extends JavaPlugin {
     public void onEnable() {
 
 
+        Value.plugin = this;
+
 
         // 初始化配置文件
         saveDefaultConfig();
