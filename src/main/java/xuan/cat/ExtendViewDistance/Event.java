@@ -1,4 +1,4 @@
-package xaun.cat.ExtendViewDistance;
+package xuan.cat.ExtendViewDistance;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
