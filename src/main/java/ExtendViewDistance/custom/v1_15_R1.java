@@ -115,42 +115,4 @@ public class v1_15_R1 implements Extend {
         }
     }
 
-
-
-
-    /** 發送視野距離 */
-    public synchronized void playerSendViewDistance(Player player, int distance) {
-        playerSendPacket(player, new PacketPlayOutViewDistance(distance)); // 發送視野距離x
-    }
-
-
-    /** 發送區塊 */
-    public void playerSendChunk(Player player, Chunk chunk) {
-        playerSendChunk(player, getNMSChunk(chunk));
-    }
-    private void playerSendChunk(Player player, net.minecraft.server.v1_15_R1.Chunk chunk) {
-        // 65535 + 1 = 65536 = 16 * 256 * 16
-        playerSendPacket(player, new PacketPlayOutMapChunk(chunk, 65535, true)); // 發送區塊
-        //Bukkit.getScheduler().runTask(Value.plugin, () -> {
-
-        //    Bukkit.getScheduler().runTaskAsynchronously(Value.plugin, () -> {
-        //    });
-        //});
-    }
-
-
-    /** 發送區塊卸除 */
-    public void playerSendUnloadChunk(Player player, int x, int z) {
-        playerSendPacket(player, new PacketPlayOutUnloadChunk(x, z)); // 發送區塊卸除
-    }
-
-
-    /** 發送光照更新 */
-    public void playerSendChunkLightUpdate(Player player, Chunk chunk) {
-        playerSendChunkLightUpdate(player, getNMSChunk(chunk));
-    }
-    private void playerSendChunkLightUpdate(Player player, net.minecraft.server.v1_15_R1.Chunk chunk) {
-        LightEngine lightEngine = chunk.getWorld().getChunkProvider().getLightEngine();         // 取得光照引擎
-        playerSendPacket(player, new PacketPlayOutLightUpdate(chunk.getPos(), lightEngine));    // 更新光照
-    }
 }

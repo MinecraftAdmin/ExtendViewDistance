@@ -5,6 +5,7 @@ import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
+import xuan.cat.PacketEventCatAPI.Packet;
 
 import java.util.*;
 
@@ -61,10 +62,10 @@ public class Loop {
                                 isSend++;
 
                                 Chunk chunk = Value.extend.getChunk(waiting.world, waiting.x, waiting.z);
-                                Value.extend.playerSendViewDistance(player, order.clientViewDistance);
+                                Packet.callServerViewDistancePacket(player, order.clientViewDistance);
                                 if (chunk != null) {
-                                    Value.extend.playerSendChunk(player, chunk);
-                                    Value.extend.playerSendChunkLightUpdate(player, chunk);
+                                    Packet.callServerMapChunkPacket(player, chunk);
+                                    Packet.callServerLightUpdatePacket(player, chunk);
                                 }
 
                                 //System.out.println("b " + i + " " + (System.currentTimeMillis() - a));
@@ -194,7 +195,7 @@ public class Loop {
                         } else if (x < minX || x > maxX || z < minZ || z > maxZ) {
                             // 超出插件的擴展距離
                             this.waitingMap.remove(key);
-                            Value.extend.playerSendUnloadChunk(player, x, z);
+                            Packet.callServerUnloadChunkPacket(player, x, z);
                         } else if (x >= minServerX && x <= maxServerX && z >= minServerZ && z <= maxServerZ) {
                             // 在伺服器的距離內
                             Waiting waiting = this.waitingMap.get(key);

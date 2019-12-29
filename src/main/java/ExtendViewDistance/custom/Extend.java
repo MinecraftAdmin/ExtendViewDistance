@@ -12,13 +12,13 @@ public interface Extend {
     /** 取得區塊 */
     Chunk getChunk(World world, int x, int z);
     /** 發送視野距離 */
-    void playerSendViewDistance(Player player, int distance);
+    //void playerSendViewDistance(Player player, int distance);
     /** 發送區塊 */
-    void playerSendChunk(Player player, Chunk chunk);
+    //void playerSendChunk(Player player, Chunk chunk);
     /** 發送區塊卸除 */
-    void playerSendUnloadChunk(Player player, int x, int z);
+    //void playerSendUnloadChunk(Player player, int x, int z);
     /** 發送光照更新 */
-    void playerSendChunkLightUpdate(Player player, Chunk chunk);
+    //void playerSendChunkLightUpdate(Player player, Chunk chunk);
     /** 異步取得區塊病發送 */
     //void playerAsyncLoadSendChunk(Player player, World world, int x, int z);
     /** 設置龍頭視野距離 */

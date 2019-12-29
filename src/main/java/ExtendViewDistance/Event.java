@@ -6,8 +6,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.world.WorldInitEvent;
+import xuan.cat.PacketEventCatAPI.api.event.packet.PacketEvent;
 import xuan.cat.PacketEventCatAPI.api.event.packet.ServerUnloadChunkPacketEvent;
 
 public class Event implements Listener {
@@ -28,7 +28,8 @@ public class Event implements Listener {
      */
     @EventHandler(priority = EventPriority.NORMAL)
     public void event(ServerUnloadChunkPacketEvent event) {
-        event.setCancelled(true);
+        if (event.getCause() != PacketEvent.Cause.PLUGIN)
+            event.setCancelled(true);
     }
 
 
