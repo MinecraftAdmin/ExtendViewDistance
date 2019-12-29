@@ -37,7 +37,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>ExtendViewDistance</mainClass> <!-- 主類名 -->
+                            <mainClass>xaun.cat.ExtendViewDistance</mainClass> <!-- 主類名 -->
                         </manifest>
                     </archive>
                 </configuration>
@@ -68,7 +68,7 @@
                         <!-- 以下為 Keep，哪些內容保持不變，因為有一些內容混淆後（a,b,c）導致反射或按類名字符串相關的操作失效 -->
 
                         <!-- 不混淆主類名稱 -->
-                        <option>-keep class ExtendViewDistance.Index</option>
+                        <option>-keep class xaun.cat.ExtendViewDistance.Index</option>
                         <!-- 不混淆@表示 -->
                         <option>-keepattributes *Annotation*</option>
 

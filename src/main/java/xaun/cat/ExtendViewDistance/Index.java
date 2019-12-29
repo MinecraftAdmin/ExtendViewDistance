@@ -1,4 +1,4 @@
-package ExtendViewDistance;
+package xaun.cat.ExtendViewDistance;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -16,7 +16,7 @@ public final class Index extends JavaPlugin {
         saveDefaultConfig();
         // 取得配置文件
         FileConfiguration configuration = getConfig();
-        Value.extendViewDistance        = configuration.getInt(     "ExtendViewDistance",       32);
+        Value.extendViewDistance        = configuration.getInt("xaun/cat/ExtendViewDistance",       32);
         if (Value.extendViewDistance > 127) Value.extendViewDistance = 127;
         Value.tickSendChunkAmount       = configuration.getInt(     "TickSendChunkAmount",      20);
         //Value.sendChunkAsync            = configuration.getBoolean( "SendChunkAsync",           true);

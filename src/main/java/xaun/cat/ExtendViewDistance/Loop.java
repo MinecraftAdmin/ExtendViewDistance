@@ -1,9 +1,8 @@
-package ExtendViewDistance;
+package xaun.cat.ExtendViewDistance;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import xuan.cat.NMSCatLib.Extend;
 import xuan.cat.NMSCatLib.api.world.ExtendChunk;
