@@ -4,9 +4,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import xuan.cat.NMSCatAPI.Extend;
-import xuan.cat.NMSCatAPI.api.world.ExtendChunk;
-import xuan.cat.PacketEventCatAPI.Packet;
+import xuan.cat.NMS;
+import xuan.cat.Packet;
+import xuan.cat.api.nms.world.ExtendChunk;
 
 import java.util.*;
 
@@ -62,7 +62,7 @@ public class Loop {
                             if (waiting != null) {
                                 isSend++;
 
-                                Chunk chunk = Extend.World(waiting.world).getChunk(ExtendChunk.Status.SURFACE, waiting.x, waiting.z, true);
+                                Chunk chunk = NMS.World(waiting.world).getChunk(ExtendChunk.Status.LIGHT, waiting.x, waiting.z, true);
                                 Packet.callServerViewDistancePacket(player, order.clientViewDistance);
                                 if (chunk != null) {
                                     Packet.callServerMapChunkPacket(player, chunk);
