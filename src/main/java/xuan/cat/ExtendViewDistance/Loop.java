@@ -4,9 +4,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import xuan.cat.NMS;
-import xuan.cat.Packet;
-import xuan.cat.api.nms.world.ExtendChunk;
+import xuan.cat.XuanCatAPI.NMS;
+import xuan.cat.XuanCatAPI.Packet;
+import xuan.cat.XuanCatAPI.api.nms.world.ExtendChunk;
 
 import java.util.*;
 

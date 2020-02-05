@@ -5,8 +5,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.world.WorldInitEvent;
-import xuan.cat.api.event.packet.PacketEvent;
-import xuan.cat.api.event.packet.ServerUnloadChunkPacketEvent;
+import xuan.cat.XuanCatAPI.api.event.packet.PacketEvent;
+import xuan.cat.XuanCatAPI.api.event.packet.ServerUnloadChunkPacketEvent;
 
 public class Event implements Listener {
 
