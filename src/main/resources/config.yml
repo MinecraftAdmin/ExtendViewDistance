@@ -15,9 +15,9 @@ ExtendViewDistance: 32
 # -- 繁體中文 --
 # 每個tick能發送給每個玩家多少個封包
 # 過低時區塊則會很慢才給滿玩家
-# 數值取決於電腦硬碟I/O性能來做調整
+# 數值取決於電腦硬碟I/O和CPU性能來做調整
 # -- English --
 # How many packets can each tick send to each player
 # When it is too low, the block will be slow to fill the player
-# The value depends on the I / O performance of the computer hard disk.
+# The value depends on the I / O and CPU performance of the computer hard disk.
 PlayerTickSendChunkAmount: 15
