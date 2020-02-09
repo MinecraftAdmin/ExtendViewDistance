@@ -67,6 +67,8 @@ public class Loop {
                                 if (chunk != null) {
                                     Packet.callServerMapChunkPacket(player, chunk);
                                     Packet.callServerLightUpdatePacket(player, chunk);
+
+                                    //System.out.println("x:" + chunk.getX() + " z:" + chunk.getZ());
                                 }
 
                                 //System.out.println("b " + i + " " + (System.currentTimeMillis() - a));
