@@ -150,13 +150,6 @@ public class Loop {
         }
         return false;
     }
-    public static boolean setWaitingChangeWorld(Player player, World world) {
-        Order order = Loop.priorityOrder.get(player);
-        if (order != null) {
-            return order.setChangeWorld(world);
-        }
-        return false;
-    }
 
 
 
