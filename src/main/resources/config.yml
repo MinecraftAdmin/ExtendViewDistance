@@ -6,7 +6,7 @@
 # 從此插件延伸的區塊不會載入實體/方塊更新
 # -- English --
 # Highest extendable field of view
-# Recommended value, server setting 3-6, plug-in setting 4-64 (up to 128)
+# Recommended value, server setting 3-6, plug-in setting 4-64 (up to 127)
 # Does not affect the field of view of the server itself
 # The first level is adjusted according to the visual field distance of the client, but if the client bar exceeds this interval, there is only this limited visual field distance.
 # The blockchain extended from this plugin will not load entity / block updates
