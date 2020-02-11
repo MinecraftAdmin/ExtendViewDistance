@@ -263,7 +263,7 @@ public class Loop {
 
                 // 檢查權限節點
                 for (int i = Value.extendViewDistance ; i > 0 ; i--) {
-                    if (this.player.hasPermission("extend_view_distance." + i)) {
+                    if (viewDistance > i && this.player.hasPermission("extend_view_distance." + i)) {
                         viewDistance = i;
                         break;
                     }
