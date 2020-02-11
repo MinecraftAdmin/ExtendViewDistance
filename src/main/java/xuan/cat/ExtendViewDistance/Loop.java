@@ -261,6 +261,15 @@ public class Loop {
             if (this.nowWorld == null || nowX == null || nowZ == null || this.nowWorld != moveWorld || this.nowX != moveX || this.nowZ != moveZ || this.clientViewDistance != viewDistance) {
                 // 有需要重算權重
 
+                // 檢查權限節點
+                for (int i = Value.extendViewDistance ; i > 0 ; i--) {
+                    if (this.player.hasPermission("extend_view_distance." + i)) {
+                        viewDistance = i;
+                        break;
+                    }
+                }
+
+
                 int minX = moveX - viewDistance - 1;
                 int minZ = moveZ - viewDistance - 1;
                 int maxX = moveX + viewDistance + 1;
