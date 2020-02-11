@@ -2,9 +2,15 @@ package xuan.cat.ExtendViewDistance;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import xuan.cat.XuanCatAPI.NMS;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public final class Index extends JavaPlugin {
 
@@ -19,9 +25,52 @@ public final class Index extends JavaPlugin {
         saveDefaultConfig();
         // 取得配置文件
         FileConfiguration configuration = getConfig();
-        Value.extendViewDistance        = configuration.getInt(     "ExtendViewDistance",       32);
+
+        Value.extendViewDistance        = configuration.getInt(     "extend-view-distance",             32);
         if (Value.extendViewDistance > 127) Value.extendViewDistance = 127;
-        Value.tickSendChunkAmount       = configuration.getInt(     "TickSendChunkAmount",      20);
+
+        Value.tickSendChunkAmount       = configuration.getInt(     "player-tick-send-chunk-amount",    30);
+        ConfigurationSection preventXray = configuration.getConfigurationSection(     "prevent-xray");
+        if (preventXray != null) {
+
+            if (preventXray.getBoolean("enable", false)) {
+                // 啟用
+
+                // 讀取轉換清單
+                ConfigurationSection conversion = preventXray.getConfigurationSection("conversion");
+
+                if (conversion != null) {
+                    for (String to : conversion.getKeys(false)) {
+                        Material toMaterial = Material.getMaterial(to.toUpperCase());
+
+                        if (toMaterial == null) {
+                            getLogger().warning("Can't find this material: " + to); // 找不到這種材料
+                            continue;
+                        }
+
+                        List<Material> materialList = new ArrayList<>();
+
+                        for (String target : conversion.getStringList(to)) {
+                            Material targetMaterial = Material.getMaterial(target.toUpperCase());
+
+                            if (targetMaterial == null) {
+                                getLogger().warning("Can't find this material: " + target); // 找不到這種材料
+                                continue;
+                            }
+
+                            materialList.add(targetMaterial);
+                        }
+
+
+                        Material[] materials = new Material[materialList.size()];
+                        for (int i = 0 ; i < materials.length ; ++i )
+                            materials[i] = materialList.get(i);
+
+                        Value.conversionMaterialListMap.put(toMaterial, materials);
+                    }
+                }
+            }
+        }
         //Value.sendChunkAsync            = configuration.getBoolean( "SendChunkAsync",           true);
         //Value.playerTickSendChunkAmount = configuration.getInt(     "PlayerTickSendChunkAmount", 1);
         //Value.playerOutChunkSendUnload  = configuration.getBoolean( "PlayerOutChunkSendUnload",  true);
@@ -43,6 +92,7 @@ TickIsLag: 50
         }, 0, 1); // 顯示更遠的區塊給玩家
 
 
+
         // 事件
         Bukkit.getPluginManager().registerEvents(new Event(), this);
 
@@ -55,6 +105,8 @@ TickIsLag: 50
 
         getLogger().info(ChatColor.GREEN + "Plugin loading completed!"); // 插件加载完成!
     }
+
+
 
     @Override
     public void onDisable() {

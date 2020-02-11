@@ -2,12 +2,14 @@ package xuan.cat.ExtendViewDistance;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import xuan.cat.XuanCatAPI.NMS;
 import xuan.cat.XuanCatAPI.Packet;
 import xuan.cat.XuanCatAPI.api.event.packet.PacketDelayedTrigger;
 import xuan.cat.XuanCatAPI.api.nms.world.ExtendChunk;
+import xuan.cat.XuanCatAPI.api.nms.world.ExtendChunkCache;
 
 import java.util.*;
 
@@ -19,7 +21,7 @@ public class Loop {
 
 
 
-    public void run() {
+    public synchronized void run() {
         if (isRun) return;
         isRun = true;
 
@@ -27,24 +29,22 @@ public class Loop {
             synchronized (priorityOrder) {
 
                 // 新增 / 重新檢查玩家位置
-                {
-                    synchronized (Bukkit.getOnlinePlayers()) {
-                        Collection<? extends Player> playerCollection = Bukkit.getOnlinePlayers();
-                        for (Player player : playerCollection) {
-                            Loop.priorityOrder.computeIfAbsent(player, v -> new Order(player));
+                synchronized (Bukkit.getOnlinePlayers()) {
+                    Collection<? extends Player> playerCollection = Bukkit.getOnlinePlayers();
+                    for (Player player : playerCollection) {
+                        Loop.priorityOrder.computeIfAbsent(player, v -> new Order(player));
+                    }
+
+                    Set<Player> players     = Loop.priorityOrder.keySet();
+                    //List<World> worldList   = Bukkit.getWorlds();
+                    for (Player player : players) {
+                        if (!NMS.Player(player).getConnection().isConnected()) {
+                            // 玩家已離線
+                            Loop.priorityOrder.remove(player);
+                            continue;
                         }
 
-                        Set<Player> players     = Loop.priorityOrder.keySet();
-                        //List<World> worldList   = Bukkit.getWorlds();
-                        for (Player player : players) {
-                            if (!NMS.Player(player).getConnection().isConnected()) {
-                                // 玩家已離線
-                                Loop.priorityOrder.remove(player);
-                                continue;
-                            }
-
-                            Loop.priorityOrder.get(player).move();
-                        }
+                        Loop.priorityOrder.get(player).move();
                     }
                 }
 
@@ -52,35 +52,44 @@ public class Loop {
                 //System.out.println("a " + (System.currentTimeMillis() - a));
 
                 // 抽選出一定的量, 發送區塊
-                {
-                    Object[] players = Loop.priorityOrder.keySet().toArray();
-                    if (players.length != 0) {
-                        for (int i = 0, isSend = 0; i < Value.tickSendChunkAmount && isSend < Value.tickSendChunkAmount; ++i) {
-                            Player  player  = (Player) players[(int) (Math.random() * players.length)];
-                            Order   order   = Loop.priorityOrder.get(player);
+                Object[] players = Loop.priorityOrder.keySet().toArray();
+                if (players.length != 0) {
+                    for (int i = 0, isSend = 0; i < Value.tickSendChunkAmount && isSend < Value.tickSendChunkAmount; ++i) {
+                        Player  player  = (Player) players[(int) (Math.random() * players.length)];
+                        Order   order   = Loop.priorityOrder.get(player);
 
-                            if (order.isChangeWorld() || order.setChangeWorld(player.getWorld())) {
-                                // 世界發生改變
-                                // 將全部區塊卸除
-                                order.unloadAllChunk();
-                                continue;
-                            }
+                        if (order.isChangeWorld() || order.setChangeWorld(player.getWorld())) {
+                            // 世界發生改變
+                            // 將全部區塊卸除
+                            order.unloadAllChunk();
+                            continue;
+                        }
 
-                            Waiting waiting = order.get();
-                            if (waiting != null) {
-                                isSend++;
+                        Waiting waiting = order.get();
+                        if (waiting != null) {
+                            isSend++;
 
-                                Chunk chunk = NMS.World(waiting.world).getChunk(ExtendChunk.Status.LIGHT, waiting.x, waiting.z, true);
-                                Packet.callServerViewDistancePacket(player, order.clientViewDistance);
-                                if (chunk != null) {
-                                    Packet.callServerMapChunkPacket(player, chunk);
-                                    Packet.callServerLightUpdatePacket(player, chunk);
+                            Chunk chunk = NMS.World(waiting.world).getChunk(ExtendChunk.Status.LIGHT, waiting.x, waiting.z, true);
+                            if (chunk != null) {
 
-                                    //System.out.println("x:" + chunk.getX() + " z:" + chunk.getZ());
+                                // 防透視礦物作弊
+                                // 複製區塊
+                                ExtendChunkCache chunkCache = NMS.Chunk(chunk).asCache();
+                                // 替換全部指定材質
+                                for (Map.Entry<Material, Material[]> entry : Value.conversionMaterialListMap.entrySet()) {
+                                    chunkCache.replaceAllMaterial(entry.getValue(), entry.getKey());
                                 }
 
-                                //System.out.println("b " + i + " " + (System.currentTimeMillis() - a));
+                                chunk = chunkCache.asChunk(chunk.getWorld());
+
+                                Packet.callServerViewDistancePacket(player, order.clientViewDistance);
+                                Packet.callServerMapChunkPacket(player, chunk);
+                                Packet.callServerLightUpdatePacket(player, chunk);
+
+                                //System.out.println("x:" + chunk.getX() + " z:" + chunk.getZ());
                             }
+
+                            //System.out.println("b " + i + " " + (System.currentTimeMillis() - a));
                         }
                     }
                 }
@@ -257,10 +266,10 @@ public class Loop {
                 int maxX = moveX + viewDistance + 1;
                 int maxZ = moveZ + viewDistance + 1;
                 int serverViewDistance = Bukkit.getServer().getViewDistance();
-                int minServerX = moveX - serverViewDistance;
-                int minServerZ = moveZ - serverViewDistance;
-                int maxServerX = moveX + serverViewDistance;
-                int maxServerZ = moveZ + serverViewDistance;
+                int minServerX = moveX - (serverViewDistance + 1);
+                int minServerZ = moveZ - (serverViewDistance + 1);
+                int maxServerX = moveX + (serverViewDistance + 1);
+                int maxServerZ = moveZ + (serverViewDistance + 1);
 
 
                 // 超出範圍的移除

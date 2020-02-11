@@ -10,14 +10,44 @@
 # Does not affect the field of view of the server itself
 # The first level is adjusted according to the visual field distance of the client, but if the client bar exceeds this interval, there is only this limited visual field distance.
 # The blockchain extended from this plugin will not load entity / block updates
-ExtendViewDistance: 32
+extend-view-distance: 32
 
 # -- 繁體中文 --
 # 每個tick能發送給每個玩家多少個封包
 # 過低時區塊則會很慢才給滿玩家
-# 數值取決於電腦硬碟I/O和CPU性能來做調整
+# 數值取決於網路速度和CPU性能來做調整
+# 越高越好, 但過高可能會造成堵塞
 # -- English --
 # How many packets can each tick send to each player
 # When it is too low, the block will be slow to fill the player
-# The value depends on the I / O and CPU performance of the computer hard disk.
-PlayerTickSendChunkAmount: 15
+# The value depends on the network speed and CPU performance
+# Higher is better, but too high may cause blockage
+player-tick-send-chunk-amount: 30
+
+# -- 繁體中文 --
+# 防止礦物透視作弊
+# -- English --
+# Prevent mineral perspective cheating
+prevent-xray:
+
+  # -- 繁體中文 --
+  # 是否啟用
+  # -- English --
+  # Whether to enable
+  enable: true
+
+  # -- 繁體中文 --
+  # 轉換清單
+  # -- English --
+  # Conversion list
+  conversion:
+    STONE:
+      - COAL_ORE
+      - DIAMOND_ORE
+      - EMERALD_ORE
+      - GOLD_ORE
+      - IRON_ORE
+      - LAPIS_ORE
+      - REDSTONE_ORE
+    NETHERRACK:
+      - NETHER_QUARTZ_ORE

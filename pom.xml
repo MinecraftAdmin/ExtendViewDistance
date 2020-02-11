@@ -6,7 +6,7 @@
 
     <groupId>ExtendViewDistance</groupId>
     <artifactId>ExtendViewDistance</artifactId>
-    <version>3.0.8</version>
+    <version>4.0.2</version>
     <packaging>jar</packaging>
 
     <name>ExtendViewDistance</name>
@@ -104,7 +104,7 @@
         <dependency>
             <groupId>xuan.cat</groupId>
             <artifactId>XuanCatAPI</artifactId>
-            <version>1.0.20</version>
+            <version>1.0.24</version>
         </dependency>
 
 
