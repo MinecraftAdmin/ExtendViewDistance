@@ -270,15 +270,15 @@ public class Loop {
                 }
 
 
-                int minX = moveX - viewDistance - 1;
-                int minZ = moveZ - viewDistance - 1;
-                int maxX = moveX + viewDistance + 1;
-                int maxZ = moveZ + viewDistance + 1;
+                int minX = moveX - viewDistance - 2;
+                int minZ = moveZ - viewDistance - 2;
+                int maxX = moveX + viewDistance + 2;
+                int maxZ = moveZ + viewDistance + 2;
                 int serverViewDistance = Bukkit.getServer().getViewDistance();
-                int minServerX = moveX - serverViewDistance;
-                int minServerZ = moveZ - serverViewDistance;
-                int maxServerX = moveX + serverViewDistance;
-                int maxServerZ = moveZ + serverViewDistance;
+                int minServerX = moveX - (serverViewDistance - 2);
+                int minServerZ = moveZ - (serverViewDistance - 2);
+                int maxServerX = moveX + (serverViewDistance - 2);
+                int maxServerZ = moveZ + (serverViewDistance - 2);
 
 
                 // 超出範圍的移除
