@@ -46,6 +46,13 @@ public class Event implements Listener {
 
  */
     @EventHandler(priority = EventPriority.NORMAL)
+    public void event(ServerViewDistancePacketEvent event) {
+        if (event.getCause() != PacketEvent.Cause.PLUGIN)
+            event.setCancelled(true);
+    }
+
+
+    @EventHandler(priority = EventPriority.NORMAL)
     public void event(ServerMapChunkPacketEvent event) {
         this.event((PacketEvent) event);
     }
@@ -53,13 +60,6 @@ public class Event implements Listener {
     public void event(ServerLightUpdatePacketEvent event) {
         this.event((PacketEvent) event);
     }
-    @EventHandler(priority = EventPriority.NORMAL)
-    public void event(ServerViewDistancePacketEvent event) {
-        if (event.getCause() != PacketEvent.Cause.PLUGIN)
-            event.setCancelled(true);
-    }
-
-
     /**
      * 封包事件, 確保玩家不在切換世界中
      * @param event 封包事件
