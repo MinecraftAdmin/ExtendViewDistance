@@ -26,7 +26,18 @@ public class Loop {
         isRun = true;
 
         try {
+
+
+            // 暫存
+            ExtendChunkCache[]  extendChunkCaches   = new ExtendChunkCache  [ Value.tickSendChunkAmount ];
+            Waiting[]           waitingCaches       = new Waiting           [ Value.tickSendChunkAmount ];
+            Player[]            playerCaches        = new Player            [ Value.tickSendChunkAmount ];
+            Order[]             orderCaches         = new Order             [ Value.tickSendChunkAmount ];
+
+
+
             synchronized (priorityOrder) {
+
 
                 // 新增 / 重新檢查玩家位置
                 synchronized (Bukkit.getOnlinePlayers()) {
@@ -35,7 +46,7 @@ public class Loop {
                         Loop.priorityOrder.computeIfAbsent(player, v -> new Order(player));
                     }
 
-                    Set<Player> players     = Loop.priorityOrder.keySet();
+                    Set<Player> players = Loop.priorityOrder.keySet();
                     //List<World> worldList   = Bukkit.getWorlds();
                     for (Player player : players) {
                         if (!NMS.Player(player).getConnection().isConnected()) {
@@ -49,14 +60,13 @@ public class Loop {
                 }
 
 
-                //System.out.println("a " + (System.currentTimeMillis() - a));
-
                 // 抽選出一定的量, 發送區塊
                 Object[] players = Loop.priorityOrder.keySet().toArray();
                 if (players.length != 0) {
+
                     for (int i = 0, isSend = 0; i < Value.tickSendChunkAmount && isSend < Value.tickSendChunkAmount; ++i) {
-                        Player  player  = (Player) players[(int) (Math.random() * players.length)];
-                        Order   order   = Loop.priorityOrder.get(player);
+                        Player player = (Player) players[(int) (Math.random() * players.length)];
+                        Order order = Loop.priorityOrder.get(player);
 
                         if (order.isChangeWorld() || order.setChangeWorld(player.getWorld())) {
                             // 世界發生改變
@@ -70,41 +80,49 @@ public class Loop {
                             isSend++;
 
                             // 取得區塊緩存
-                            ExtendChunkCache chunkCache = NMS.World(waiting.world).getChunkCache(ExtendChunk.Status.LIGHT, waiting.x, waiting.z, true);
-                            if (chunkCache != null) {
-
-                                // 防透視礦物作弊
-                                // 替換全部指定材質
-                                for (Map.Entry<Material, Material[]> entry : Value.conversionMaterialListMap.entrySet()) {
-                                    chunkCache.replaceAllMaterial(entry.getValue(), entry.getKey());
-                                }
-
-                                Chunk chunk = chunkCache.asChunk(waiting.world);
-
-                                Packet.callServerViewDistancePacket(player, order.clientViewDistance);
-                                Packet.callServerMapChunkPacket(player, chunk);
-                                Packet.callServerLightUpdatePacket(player, chunk);
-
-                                //System.out.println("x:" + chunk.getX() + " z:" + chunk.getZ());
-                            }
-
-                            //System.out.println("b " + i + " " + (System.currentTimeMillis() - a));
+                            waitingCaches[i] = waiting;
+                            playerCaches[i] = player;
+                            orderCaches[i] = order;
+                            extendChunkCaches[i] = NMS.World(waiting.world).getChunkCache(ExtendChunk.Status.LIGHT, waiting.x, waiting.z, true);
                         }
                     }
                 }
-
-
-
-
             }
+
+
+
+            // 到這裡就算結束了
+            isRun = false;
+
+
+
+            for (int i = 0 ; i < extendChunkCaches.length ; ++i) {
+                ExtendChunkCache    extendChunkCache    = extendChunkCaches [ i ];
+                Waiting             waiting             = waitingCaches     [ i ];
+                Order               order               = orderCaches       [ i ];
+                Player              player              = playerCaches      [ i ];
+
+                if (extendChunkCache != null && waiting != null && order != null && player != null) {
+
+                    // 防透視礦物作弊
+                    // 替換全部指定材質
+                    for (Map.Entry<Material, Material[]> entry : Value.conversionMaterialListMap.entrySet()) {
+                        extendChunkCache.replaceAllMaterial(entry.getValue(), entry.getKey());
+                    }
+
+                    Chunk chunk = extendChunkCache.asChunk(waiting.world);
+
+                    Packet.callServerViewDistancePacket(player, order.clientViewDistance);
+                    Packet.callServerMapChunkPacket(player, chunk);
+                    Packet.callServerLightUpdatePacket(player, chunk);
+                }
+            }
+
+
+
         } catch (Exception ex) {
             ex.fillInStackTrace();
         }
-        //long a = System.currentTimeMillis();
-
-        //System.out.println("c " + (System.currentTimeMillis() - a));
-
-        isRun = false;
     }
 
 
@@ -275,10 +293,10 @@ public class Loop {
                 int maxX = moveX + (viewDistance + 1);
                 int maxZ = moveZ + (viewDistance + 1);
                 int serverViewDistance = Bukkit.getServer().getViewDistance();
-                int minServerX = moveX - (serverViewDistance + 1);
-                int minServerZ = moveZ - (serverViewDistance + 1);
-                int maxServerX = moveX + (serverViewDistance + 1);
-                int maxServerZ = moveZ + (serverViewDistance + 1);
+                int minServerX = moveX - (serverViewDistance);
+                int minServerZ = moveZ - (serverViewDistance);
+                int maxServerX = moveX + (serverViewDistance);
+                int maxServerZ = moveZ + (serverViewDistance);
 
 
                 // 超出範圍的移除
