@@ -80,10 +80,10 @@ public class Loop {
                             isSend++;
 
                             // 取得區塊緩存
-                            waitingCaches[i] = waiting;
-                            playerCaches[i] = player;
-                            orderCaches[i] = order;
-                            extendChunkCaches[i] = NMS.World(waiting.world).getChunkCache(ExtendChunk.Status.LIGHT, waiting.x, waiting.z, true);
+                            waitingCaches[i]        = waiting;
+                            playerCaches[i]         = player;
+                            orderCaches[i]          = order;
+                            extendChunkCaches[i]    = NMS.World(waiting.world).getChunkCache(ExtendChunk.Status.LIGHT, waiting.x, waiting.z, true);
                         }
                     }
                 }
