@@ -145,6 +145,7 @@ public class Loop {
 
     /**
      * 等待更改世界
+     * 這是為了確保卸載區塊封包, 要在新世界區塊封包之前發送完畢
      * @param player 玩家
      * @param trigger 事件延遲觸發氣
      * @return 是否在等待切換世界中
