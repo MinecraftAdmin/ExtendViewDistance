@@ -69,18 +69,17 @@ public class Loop {
                         if (waiting != null) {
                             isSend++;
 
-                            Chunk chunk = NMS.World(waiting.world).getChunk(ExtendChunk.Status.LIGHT, waiting.x, waiting.z, true);
-                            if (chunk != null) {
+                            // 取得區塊緩存
+                            ExtendChunkCache chunkCache = NMS.World(waiting.world).getChunkCache(ExtendChunk.Status.LIGHT, waiting.x, waiting.z, true);
+                            if (chunkCache != null) {
 
                                 // 防透視礦物作弊
-                                // 複製區塊
-                                ExtendChunkCache chunkCache = NMS.Chunk(chunk).asCache();
                                 // 替換全部指定材質
                                 for (Map.Entry<Material, Material[]> entry : Value.conversionMaterialListMap.entrySet()) {
                                     chunkCache.replaceAllMaterial(entry.getValue(), entry.getKey());
                                 }
 
-                                chunk = chunkCache.asChunk(chunk.getWorld());
+                                Chunk chunk = chunkCache.asChunk(waiting.world);
 
                                 Packet.callServerViewDistancePacket(player, order.clientViewDistance);
                                 Packet.callServerMapChunkPacket(player, chunk);
