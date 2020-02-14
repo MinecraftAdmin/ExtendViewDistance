@@ -55,16 +55,17 @@ public class ChunkMapView {
 
 
 
-    public long[] move(Location location) {
-        return move(ChunkMapView.blockToChunk(location.getX()), ChunkMapView.blockToChunk(location.getZ()));
+    public long[] move(Location location, boolean force) {
+        return move(ChunkMapView.blockToChunk(location.getX()), ChunkMapView.blockToChunk(location.getZ()), force);
     }
     /**
      * 移動到區塊位置 (中心點)
      * @param moveX 區塊座標X
      * @param moveZ 區塊座標Z
+     * @param force 是否強制
      * @return 如果有區塊被移除, 則會集中回傳在這
      */
-    public long[] move(int moveX, int moveZ) {
+    public long[] move(int moveX, int moveZ, boolean force) {
 
         /*
         先對 chunkMap 進行座標位移
@@ -186,7 +187,7 @@ public class ChunkMapView {
 
 
 
-        if (offsetX != 0 || offsetZ != 0) {
+        if (offsetX != 0 || offsetZ != 0 || force) {
             // 如果座標有發生改動, 更新目前儲存的座標
             this.chunkMap[63] = getChunkKey(moveX, moveZ);
 
