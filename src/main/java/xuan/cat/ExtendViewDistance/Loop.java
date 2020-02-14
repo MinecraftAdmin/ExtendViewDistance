@@ -202,7 +202,7 @@ public class Loop implements Runnable {
                     if (chunkKey != null) {
                         try {
 
-                            ExtendChunkCache chunkCache = NMS.World(playerView.world).getChunkCache(ExtendChunk.Status.EMPTY, ChunkMapView.getX(chunkKey), ChunkMapView.getZ(chunkKey), true);
+                            ExtendChunkCache chunkCache = NMS.World(playerView.world).getChunkCache(ExtendChunk.Status.LIGHT, ChunkMapView.getX(chunkKey), ChunkMapView.getZ(chunkKey), true);
 
                             if (chunkCache != null) {
                                 waitingSendPlayerView   [ waitingSendRead ] = playerView;
