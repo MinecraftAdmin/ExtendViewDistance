@@ -58,12 +58,12 @@ public class Event implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
     public void event(ServerMapChunkPacketEvent event) {
         if (event.getCause() != PacketEvent.Cause.PLUGIN)
-            Loop.addWaitingChangeWorldPacket(event.getPlayer(), event.getTrigger());
+            Loop.waitingChangeWorldPacket(event.getPlayer(), event.getTrigger());
     }
     @EventHandler(priority = EventPriority.NORMAL)
     public void event(ServerLightUpdatePacketEvent event) {
         if (event.getCause() != PacketEvent.Cause.PLUGIN)
-            Loop.addWaitingChangeWorldPacket(event.getPlayer(), event.getTrigger());
+            Loop.waitingChangeWorldPacket(event.getPlayer(), event.getTrigger());
     }
 
 

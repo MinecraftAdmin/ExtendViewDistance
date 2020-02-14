@@ -2,13 +2,17 @@ package xuan.cat.ExtendViewDistance;
 
 import org.bukkit.Material;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Value {
-    public static int                       extendViewDistance;
+    public static int                       extendViewDistance          = 32;
     public static int                       tickSendChunkAmount;
-    public static Map<Material, Material[]> conversionMaterialListMap = new HashMap<>();
+    public static int                       serverFieldViewCorrection   = 2;
+    public static Map<Material, Material[]> conversionMaterialListMap   = new HashMap<>();
+    public static List<String>              worldBlacklist              = new ArrayList<>();
     //public static boolean   sendChunkAsync;
     //public static int       playerTickSendChunkAmount;
     //public static boolean   playerOutChunkSendUnload;

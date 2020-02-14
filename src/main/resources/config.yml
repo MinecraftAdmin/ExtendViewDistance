@@ -1,16 +1,17 @@
 # -- 繁體中文 --
 # 最高可擴展的視野距離
-# 建議值,伺服器設置3-6,插件設置4-64 (最高能到127)
+# 建議值,伺服器設置3-6,插件設置4-32 (最高能到32)
 # 不影響伺服器本身的視野距離
 # 實際上是依照客戶端的視野距離來調整,但如果客戶端條超過此限值,一樣只有此限制的視野距離
 # 從此插件延伸的區塊不會載入實體/方塊更新
 # -- English --
 # Highest extendable field of view
-# Recommended value, server setting 3-6, plug-in setting 4-64 (up to 127)
+# Recommended value, server setting 3-6, plug-in setting 4-32 (up to 32)
 # Does not affect the field of view of the server itself
 # The first level is adjusted according to the visual field distance of the client, but if the client bar exceeds this interval, there is only this limited visual field distance.
-# The blockchain extended from this plugin will not load entity / block updates
+# The chunkchain extended from this plugin will not load entity / block updates
 extend-view-distance: 32
+
 
 # -- 繁體中文 --
 # 每個tick能發送給每個玩家多少個封包
@@ -19,10 +20,24 @@ extend-view-distance: 32
 # 越高越好, 但過高可能會造成堵塞
 # -- English --
 # How many packets can each tick send to each player
-# When it is too low, the block will be slow to fill the player
+# When it is too low, the chunk will be slow to fill the player
 # The value depends on the network speed and CPU performance
-# Higher is better, but too high may cause blockage
+# Higher is better, but too high may cause chunkage
 player-tick-send-chunk-amount: 30
+
+
+# -- 繁體中文 --
+# 如果察覺, 此插件提供的區塊, 會覆蓋到伺服器本身的區塊
+# 或是中途缺少幾圈區塊
+# 則調整此值
+# 補正: server.properties -> view-distance + server-field-view-correction
+# -- English --
+# If you notice that the chunk provided by this plugin will overwrite the chunk of the server itself
+# Or missing a few lap chunk halfway
+# adjust this value
+# Correction: server.properties -> view-distance + server-field-view-correction
+server-field-view-correction: 2
+
 
 # -- 繁體中文 --
 # 防止礦物透視作弊
@@ -51,3 +66,14 @@ prevent-xray:
       - REDSTONE_ORE
     NETHERRACK:
       - NETHER_QUARTZ_ORE
+
+
+
+# -- 繁體中文 --
+# 世界黑名單
+# 在此名單的世界不要提供視野距離擴展
+# -- English --
+# World Blacklist
+# Don't provide visual range extension in the world of this list
+world-blacklist:
+  - world_nether
