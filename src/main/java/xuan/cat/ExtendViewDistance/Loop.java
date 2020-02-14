@@ -87,6 +87,7 @@ public class Loop implements Runnable {
 
         try {
             Collection<? extends Player> onlinePlayers = Bukkit.getOnlinePlayers();
+            Map<Player, PlayerView> playerPlayerViewHashMap = Collections.unmodifiableMap(Loop.playerPlayerViewHashMap);
 
 
             int extendViewDistance = Value.extendViewDistance;
@@ -105,7 +106,7 @@ public class Loop implements Runnable {
                 PlayerView playerView = playerPlayerViewHashMap.get(player);
                 if (playerView == null) {
                     playerView = new PlayerView();
-                    playerPlayerViewHashMap.put(player, playerView);
+                    Loop.playerPlayerViewHashMap.put(player, playerView);
 
                     playerView.player       = player;
                     playerView.chunkMapView = new ChunkMapView();
@@ -129,7 +130,7 @@ public class Loop implements Runnable {
             for (PlayerView playerView : playerPlayerViewHashMap.values()) {
                 if (!NMS.Player(playerView.player).getConnection().isConnected()) {
                     // 玩家已離線
-                    playerPlayerViewHashMap.remove(playerView.player);
+                    Loop.playerPlayerViewHashMap.remove(playerView.player);
                     continue;
                 }
 
