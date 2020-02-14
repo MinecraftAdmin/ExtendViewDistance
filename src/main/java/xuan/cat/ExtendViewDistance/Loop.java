@@ -86,7 +86,7 @@ public class Loop implements Runnable {
         isRun = true;
 
         try {
-            Collection<? extends Player> onlinePlayers = Bukkit.getOnlinePlayers();
+            Collection<? extends Player> onlinePlayers = Collections.unmodifiableCollection(Bukkit.getOnlinePlayers());
             Map<Player, PlayerView> playerPlayerViewHashMap = Collections.unmodifiableMap(Loop.playerPlayerViewHashMap);
 
 
@@ -122,12 +122,14 @@ public class Loop implements Runnable {
 
 
             // 當玩家確定沒問題後, 就可以放入此陣列中
-            PlayerView[]    playerViews     = new PlayerView[playerPlayerViewHashMap.size()];
+            PlayerView[]    playerViews     = new PlayerView[ playerPlayerViewHashMap.size() ];
             int             playerViewsRead = 0;
 
 
+            Object[] playerViewArray = playerPlayerViewHashMap.values().toArray();
+            for (Object o : playerViewArray) {
+                PlayerView playerView = (PlayerView) o;
 
-            for (PlayerView playerView : playerPlayerViewHashMap.values()) {
                 if (!NMS.Player(playerView.player).getConnection().isConnected()) {
                     // 玩家已離線
                     Loop.playerPlayerViewHashMap.remove(playerView.player);
@@ -213,7 +215,7 @@ public class Loop implements Runnable {
                 ExtendChunkCache    chunkCache  = waitingSendChunkCache [ i ];
 
 
-                if (playerView.waitingChangeWorld) continue;
+                if (playerView == null || playerView.waitingChangeWorld) continue;
 
 
                 // 防透視礦物作弊
