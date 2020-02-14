@@ -61,11 +61,12 @@ public class Loop implements Runnable {
      * 表示玩家視野
      */
     public static class PlayerView {
-        public          Player                       player;
-        public          ChunkMapView                 chunkMapView;
-        public          World                        world;
-        public final    List<PacketDelayedTrigger>   packetTriggerListMap    = new ArrayList<>();
-        public          boolean                      waitingChangeWorld      = false;
+        public          Player                      player;
+        public          ChunkMapView                chunkMapView;
+        public          World                       world;
+        public final    List<PacketDelayedTrigger>  packetTriggerListMap    = new ArrayList<>();
+        public          boolean                     waitingChangeWorld      = false;
+        public          int                         delayedSendTick         = Value.delayedSendTick;
 
         public boolean isChangeWorld(World moveWorld) {
             this.waitingChangeWorld = !this.world.equals(moveWorld);
@@ -86,8 +87,8 @@ public class Loop implements Runnable {
         isRun = true;
 
         try {
-            Collection<? extends Player> onlinePlayers = Collections.unmodifiableCollection(Bukkit.getOnlinePlayers());
-            Map<Player, PlayerView> playerPlayerViewHashMap = Collections.unmodifiableMap(Loop.playerPlayerViewHashMap);
+            Collection<? extends Player>    onlinePlayers           = Collections.unmodifiableCollection(Bukkit.getOnlinePlayers());
+            Map<Player, PlayerView>         playerPlayerViewHashMap = Collections.unmodifiableMap(Loop.playerPlayerViewHashMap);
 
 
             int extendViewDistance = Value.extendViewDistance;
@@ -139,9 +140,12 @@ public class Loop implements Runnable {
                     // 玩家已離線
                     Loop.playerPlayerViewHashMap.remove(playerView.player);
                     continue;
-                }
 
-                if (playerView.waitingChangeWorld || playerView.isChangeWorld(playerView.player.getWorld())) {
+                } else if (playerView.delayedSendTick > 0) {
+                    playerView.delayedSendTick--;
+                    continue;
+
+                } else if (playerView.waitingChangeWorld || playerView.isChangeWorld(playerView.player.getWorld())) {
                     // 玩家已切換世界
                     playerView.waitingChangeWorld   = true;
                     long[] isSendChunks = playerView.chunkMapView.getIsSendChunkList();
@@ -152,6 +156,7 @@ public class Loop implements Runnable {
                     playerView.chunkMapView.clear();
                     playerView.chunkMapView.setCenter(playerView.player.getLocation());
                     playerView.waitingChangeWorld   = false;
+                    playerView.delayedSendTick      = Value.delayedSendTick;
                     for (PacketDelayedTrigger packetDelayedTrigger : Collections.unmodifiableList(playerView.packetTriggerListMap)) {
                         packetDelayedTrigger.trigger();
                     }
@@ -192,21 +197,28 @@ public class Loop implements Runnable {
 
                     Long chunkKey = playerView.chunkMapView.get();
 
-
                     if (Value.worldBlacklist.contains(playerView.world.getName())) continue; // 在黑名單內
 
-
                     if (chunkKey != null) {
-                        ExtendChunkCache chunkCache = NMS.World(playerView.world).getChunkCache(ExtendChunk.Status.LIGHT, ChunkMapView.getX(chunkKey), ChunkMapView.getZ(chunkKey), true);
+                        try {
 
-                        if (chunkCache != null) {
-                            waitingSendPlayerView   [ waitingSendRead ] = playerView;
-                            waitingSendPlayer       [ waitingSendRead ] = playerView.player;
-                            waitingSendWorld        [ waitingSendRead ] = playerView.world;
-                            waitingSendChunkCache   [ waitingSendRead ] = chunkCache;
-                            waitingSendRead++;
-                            isSend++;
+                            ExtendChunkCache chunkCache = NMS.World(playerView.world).getChunkCache(ExtendChunk.Status.EMPTY, ChunkMapView.getX(chunkKey), ChunkMapView.getZ(chunkKey), true);
+
+                            if (chunkCache != null) {
+                                waitingSendPlayerView   [ waitingSendRead ] = playerView;
+                                waitingSendPlayer       [ waitingSendRead ] = playerView.player;
+                                waitingSendWorld        [ waitingSendRead ] = playerView.world;
+                                waitingSendChunkCache   [ waitingSendRead ] = chunkCache;
+                                waitingSendRead++;
+
+                                //System.out.println( ChunkMapView.getX(chunkKey) + " / " + ChunkMapView.getZ(chunkKey));
+                            }
+
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
                         }
+
+                        isSend++;
                     }
                 }
             }
@@ -216,6 +228,12 @@ public class Loop implements Runnable {
             // 剩下的處裡不強制同步
             isRun = false;
 
+
+
+            // 除錯用
+            Map<Player, PlayerView> isSendDebugList = null;  // 需要完成調適的玩家清單
+            if (Value.backgroundDebugMode == 1 || Value.backgroundDebugMode == 2)
+                isSendDebugList = new HashMap<>();
 
 
             for (int i = 0 ; i < waitingSendRead ; ++i) {
@@ -230,17 +248,61 @@ public class Loop implements Runnable {
 
                 // 防透視礦物作弊
                 // 替換全部指定材質
-                for (Map.Entry<Material, Material[]> entry : Value.conversionMaterialListMap.entrySet()) {
-                    chunkCache.replaceAllMaterial(entry.getValue(), entry.getKey());
+                try {
+
+                    for (Map.Entry<Material, Material[]> entry : Value.conversionMaterialListMap.entrySet()) {
+                        chunkCache.replaceAllMaterial(entry.getValue(), entry.getKey());
+                    }
+
+                    Chunk chunk = chunkCache.asChunk(world);
+
+                    Packet.callServerViewDistancePacket(player, playerView.chunkMapView.extendViewDistance);
+                    Packet.callServerMapChunkPacket(player, chunk);
+                    Packet.callServerLightUpdatePacket(player, chunk);
+
+
+                    // 除錯用
+                    if (isSendDebugList != null)
+                        isSendDebugList.put(player, playerView);
+
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
-
-                Chunk chunk = chunkCache.asChunk(world);
-
-                Packet.callServerViewDistancePacket(player, playerView.chunkMapView.extendViewDistance);
-                Packet.callServerMapChunkPacket(player, chunk);
-                Packet.callServerLightUpdatePacket(player, chunk);
             }
 
+
+
+
+            // 除錯用
+            if (isSendDebugList != null) {
+                for (Map.Entry<Player, PlayerView> entry : isSendDebugList.entrySet()) {
+                    Player      player      = entry.getKey();
+                    String      playerName  = player.getName();
+                    PlayerView  playerView  = entry.getValue();
+
+                    if (Value.backgroundDebugMode == 1) {
+
+                        System.out.print("------------------------------------------------------- ");
+                        System.out.print(playerName);
+                        for (int i = playerName.length() ; i < 16 ; i++)
+                            System.out.print(' ');
+                        System.out.print(" -------------------------------------------------------");
+                        System.out.println();
+
+                        for (int i = 0 ; i < 63 ; i++)
+                            ChunkMapView.debug(playerView.chunkMapView.getChunkMap()[i]);
+
+                        System.out.print("--------------------------------------------------------------------------------------------------------------------------------");
+                        System.out.println();
+
+                    } else if (Value.backgroundDebugMode == 2) {
+                        int     all     = (playerView.chunkMapView.extendViewDistance * 2) * (playerView.chunkMapView.extendViewDistance * 2);
+                        long[]  send    = playerView.chunkMapView.getIsSendChunkList();
+                        System.out.println("player:" + playerName + " all:" + all + " wait:" + (all - send.length) + " send:" + send.length);
+                    }
+
+                }
+            }
 
 
 
@@ -251,6 +313,25 @@ public class Loop implements Runnable {
     }
 
     //private static final
+
+
+
+    public static void debug(Player player, ChunkMapView chunkMapView) {
+        player.sendMessage("----------------------------------------------------");
+        for (long value : chunkMapView.getChunkMap()) {
+            StringBuilder stringBuilder = new StringBuilder();
+            for (int i = 63 ; i >= 0 ; i--) {
+                stringBuilder.append(value >> i & 1);
+            }
+            player.sendMessage(stringBuilder.toString());
+        }
+        player.sendMessage("----------------------------------------------------");
+    }
+
+
+
+
+
 
 
 
@@ -267,7 +348,7 @@ public class Loop implements Runnable {
      */
     public static int playerMaxViewDistance(Player player, int extendViewDistance) {
 
-        int viewDistance = player.getClientViewDistance(); // 取得客戶端視野距離
+        int viewDistance = player.getClientViewDistance() + 1; // 取得客戶端視野距離
         if (viewDistance > extendViewDistance)
             viewDistance = extendViewDistance;
         if (viewDistance < 1)
@@ -282,7 +363,7 @@ public class Loop implements Runnable {
             }
         }
 
-        return viewDistance;
+        return ++viewDistance;
     }
 
 

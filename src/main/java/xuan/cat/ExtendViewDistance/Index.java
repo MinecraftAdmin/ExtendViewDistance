@@ -27,14 +27,16 @@ public final class Index extends JavaPlugin {
         // 取得配置文件
         FileConfiguration configuration = getConfig();
 
-        Value.extendViewDistance        = configuration.getInt(     "extend-view-distance",             32);
+        Value.extendViewDistance        = configuration.getInt(         "extend-view-distance",             32);
         if (Value.extendViewDistance > 32) Value.extendViewDistance = 32;
 
-        Value.tickSendChunkAmount       = configuration.getInt(     "player-tick-send-chunk-amount",    30);
-        Value.serverFieldViewCorrection = configuration.getInt(     "server-field-view-correction",     2);
-        Value.worldBlacklist            = configuration.getStringList("world-blacklist");
+        Value.tickSendChunkAmount       = configuration.getInt(         "player-tick-send-chunk-amount",    30);
+        Value.serverFieldViewCorrection = configuration.getInt(         "server-field-view-correction",     2);
+        Value.worldBlacklist            = configuration.getStringList(  "world-blacklist");
+        Value.delayedSendTick           = configuration.getInt(         "delayed-send-tick",                100);
+        Value.backgroundDebugMode       = configuration.getInt(         "background-debug-mode",            0);
 
-        ConfigurationSection preventXray = configuration.getConfigurationSection(     "prevent-xray");
+        ConfigurationSection preventXray = configuration.getConfigurationSection(   "prevent-xray");
         if (preventXray != null) {
 
             if (preventXray.getBoolean("enable", false)) {

@@ -13,6 +13,7 @@
 extend-view-distance: 32
 
 
+
 # -- 繁體中文 --
 # 每個tick能發送給每個玩家多少個封包
 # 過低時區塊則會很慢才給滿玩家
@@ -26,23 +27,45 @@ extend-view-distance: 32
 player-tick-send-chunk-amount: 30
 
 
+
 # -- 繁體中文 --
+# 由於插件發送的區塊晚於伺服器, 所以當 prevent-xray 啟用時, 發送的區塊都將會被處理
+# 直到玩家靠近該區塊, 伺服器才會發送伺服器本身的區塊 (有辦法看見礦物, 或是經過 paper 特殊處理), 此時的區塊才看得件礦物
+# 如果插件發送的區塊把伺服器的覆蓋了, 直到玩家離開區塊很遠 並再度靠近, 否則該區塊的礦物會完全看不見
 # 如果察覺, 此插件提供的區塊, 會覆蓋到伺服器本身的區塊
 # 或是中途缺少幾圈區塊
 # 則調整此值
 # 補正: server.properties -> view-distance + server-field-view-correction
 # -- English --
-# If you notice that the chunk provided by this plugin will overwrite the chunk of the server itself
+# Since the chunk sent by the plugin is later than the server, when prevent-xray is enabled, the send chunk will be processed.
+# Until the player approaches the chunk , the server will not send the chunk of the server itself (can see the ore, or special processing by paperSpigot).
+# If the chunk sent by the plugin covers the server, until the player is far away from the chunk and be close to again, ore the minerals in the chunk will be completely invisible.
+# If you notice that the chunk provided by this plugin will overwrite the chunk of the server itself.
 # Or missing a few lap chunk halfway
 # adjust this value
 # Correction: server.properties -> view-distance + server-field-view-correction
-server-field-view-correction: 2
+server-field-view-correction: 1
+
+
+
+# -- 繁體中文 --
+# 每次切換世界都要等待一段時間才發送區塊
+# 如果設置太少, 會造成客戶端顯示錯誤
+# 建議數值 ((伺服器 view-distance * 伺服器 view-distance) * 2) + 100
+# -- English --
+# Every time you switch the world, you have to wait for a period of time before sending the chunks.
+# If the setting is too small, it will cause the client to display errors
+# Suggested value: ((Server view-distance * Server view-distance) * 2) + 100
+delayed-send-tick: 100
+
 
 
 # -- 繁體中文 --
 # 防止礦物透視作弊
+# 暴力替換, 不使用任何計算
 # -- English --
 # Prevent mineral perspective cheating
+# Force replace, without using any calculations
 prevent-xray:
 
   # -- 繁體中文 --
@@ -77,3 +100,17 @@ prevent-xray:
 # Don't provide visual range extension in the world of this list
 world-blacklist:
   - world_nether
+
+
+
+# -- 繁體中文 --
+# 後臺調適模式
+# 0 關閉
+# 1 視圖
+# 2 文字
+# -- English --
+# Background debug mode
+# 0 Close
+# 1 View
+# 2 Text
+background-debug-mode: 0

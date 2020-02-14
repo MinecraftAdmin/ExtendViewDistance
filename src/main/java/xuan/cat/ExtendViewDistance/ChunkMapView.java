@@ -44,9 +44,36 @@ public class ChunkMapView {
           long[63] |00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000|
                    |-----------------------------------------------------------------------|
      */
-    public long[]   chunkMap            = new long[64];
+    private long[]  chunkMap            = new long[64];
     public int      extendViewDistance  = 32;
     public int      serverViewDistance  = 1;
+
+
+
+
+/*
+    public static void main(String[] args) {
+        ChunkMapView chunkMapView = new ChunkMapView();
+        chunkMapView.extendViewDistance = 33;
+
+        for (int i = 0 ; i < 4000 ; ++i)
+            chunkMapView.get();
+
+        System.out.println();
+        debug(chunkMapView.getChunkMap());
+
+        chunkMapView.move(0, 0);
+
+        chunkMapView.markRangeWait(32);
+        chunkMapView.extendViewDistance = 32 + 1;
+
+        System.out.println();
+        debug(chunkMapView.getChunkMap());
+    }
+    .
+ */
+
+
 
 
 
@@ -219,6 +246,8 @@ public class ChunkMapView {
         int centerX = this.getCenterX();
         int centerZ = this.getCenterZ();
 
+
+        int extendViewDistance = this.extendViewDistance > 32 ? 32 : this.extendViewDistance;
         
         /*
         尋找過程
@@ -294,7 +323,6 @@ public class ChunkMapView {
 
         int edgeStepCount = 0;  // 每個邊, 移動幾次換方向
         for (int distance = 0 ; distance < 32 && distance < extendViewDistance ; distance++ ) {
-
 
             // 總共有 4 次方向
             int readX = distance;
@@ -376,41 +404,21 @@ public class ChunkMapView {
 
 
     public void markRangeWait(int range) {
-        int edgeStepCount = 0;  // 每個邊, 移動幾次換方向
-        for (int distance = range ; distance < 32 ; distance++ ) {
+        // 確保只能是正數
+        if (range < 0) range = Math.abs(range);
 
+        if (range > 32) {
+            return;
+        }
 
-            // 總共有 4 次方向
-            int pointerX = 31 + distance;
-            int pointerZ = 31 + distance;
-            // Z--
-            for (int i = 0 ; i < edgeStepCount ; ++i) {
+        int rangeMin = 31 - range;
+        int rangeMax = 31 + range;
 
-                this.markWait(pointerX, pointerZ);
-                pointerZ--;
+        for (int pointerX = 0 ; pointerX < 63 ; ++pointerX) {
+            for (int pointerZ = 0 ; pointerZ < 63 ; ++pointerZ) {
+                if (pointerX <= rangeMin || pointerX >= rangeMax || pointerZ <= rangeMin || pointerZ >= rangeMax)
+                    this.markWait(pointerX, pointerZ);
             }
-            // X--
-            for (int i = 0 ; i < edgeStepCount ; ++i) {
-
-                this.markWait(pointerX, pointerZ);
-                pointerX--;
-            }
-            // Z++
-            for (int i = 0 ; i < edgeStepCount ; ++i) {
-
-                this.markWait(pointerX, pointerZ);
-                pointerZ++;
-            }
-            // X++
-            for (int i = 0 ; i < edgeStepCount ; ++i) {
-
-                this.markWait(pointerX, pointerZ);
-                pointerX++;
-            }
-
-
-            // 下一次循環
-            edgeStepCount += 2;
         }
     }
 
@@ -517,20 +525,18 @@ public class ChunkMapView {
 
 
     public static void debug(long[] values) {
-        System.out.println("----------------------------------------------------");
         for (long value : values)
             debug(value);
-        System.out.println("----------------------------------------------------");
     }
     public static void debug(int value) {
         for (int i = 31 ; i >= 0 ; i--) {
-            System.out.print(value >> i & 1);
+            System.out.print((value >> i & 1) == 1 ? '■' : '□');
         }
         System.out.println();
     }
     public static void debug(long value) {
         for (int i = 63 ; i >= 0 ; i--) {
-            System.out.print(value >> i & 1);
+            System.out.print((value >> i & 1) == 1 ? '■' : '□');
         }
         System.out.println();
     }
