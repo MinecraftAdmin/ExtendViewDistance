@@ -265,7 +265,7 @@ public class Loop implements Runnable {
 
 
         // 檢查權限節點
-        for (int i = Value.extendViewDistance ; i > 0 ; i--) {
+        for (int i = extendViewDistance ; i > 0 ; i--) {
             if (viewDistance > i && player.hasPermission("extend_view_distance." + i)) {
                 viewDistance = i;
                 break;
