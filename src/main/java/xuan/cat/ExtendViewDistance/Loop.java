@@ -145,9 +145,9 @@ public class Loop implements Runnable {
                     playerView.chunkMapView.clear();
                     playerView.chunkMapView.setCenter(playerView.player.getLocation());
                     playerView.waitingChangeWorld   = false;
-                        for (PacketDelayedTrigger packetDelayedTrigger : Collections.unmodifiableList(playerView.packetTriggerListMap)) {
-                            packetDelayedTrigger.trigger();
-                        }
+                    for (PacketDelayedTrigger packetDelayedTrigger : Collections.unmodifiableList(playerView.packetTriggerListMap)) {
+                        packetDelayedTrigger.trigger();
+                    }
                     continue;
                 }
 
