@@ -78,6 +78,13 @@ public class ChunkMapView {
 
 
 
+    public int getAllAmount() {
+        int viewDistance = (this.extendViewDistance > 32 ? 32 : this.extendViewDistance) - 1;
+
+        return (viewDistance + 1 + viewDistance) * (viewDistance + 1 + viewDistance);
+    }
+
+
 
 
 

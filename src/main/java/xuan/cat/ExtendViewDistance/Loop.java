@@ -117,7 +117,7 @@ public class Loop implements Runnable {
                     int playerMaxViewDistance = playerMaxViewDistance(player, extendViewDistance);
                     boolean changedViewDistance = playerView.chunkMapView.extendViewDistance != playerMaxViewDistance;
                     if (changedViewDistance) {
-                        playerView.chunkMapView.markRangeWait(playerMaxViewDistance);
+                        playerView.chunkMapView.markRangeWait(playerMaxViewDistance - 1);
                         playerView.chunkMapView.extendViewDistance = playerMaxViewDistance;
                     }
                     playerView.chunkMapView.serverViewDistance = serverViewDistance;
@@ -167,7 +167,7 @@ public class Loop implements Runnable {
                 int playerMaxViewDistance = playerMaxViewDistance(playerView.player, extendViewDistance);
                 boolean changedViewDistance = playerView.chunkMapView.extendViewDistance != playerMaxViewDistance;
                 if (changedViewDistance) {
-                    playerView.chunkMapView.markRangeWait(playerMaxViewDistance);
+                    playerView.chunkMapView.markRangeWait(playerMaxViewDistance - 1);
                     playerView.chunkMapView.extendViewDistance = playerMaxViewDistance;
                 }
                 long[] removeChunkKeyList = playerView.chunkMapView.move(playerView.player.getLocation());
@@ -296,9 +296,11 @@ public class Loop implements Runnable {
                         System.out.println();
 
                     } else if (Value.backgroundDebugMode == 2) {
-                        int     all     = (playerView.chunkMapView.extendViewDistance * 2) * (playerView.chunkMapView.extendViewDistance * 2);
+                        int     all     = playerView.chunkMapView.getAllAmount();
                         long[]  send    = playerView.chunkMapView.getIsSendChunkList();
-                        System.out.println("player:" + playerName + " all:" + all + " wait:" + (all - send.length) + " send:" + send.length);
+                        int     wait    = (all - send.length);
+
+                        System.out.println("player:" + playerName + " all:" + all + " wait:" + (wait < 0 ? 0 : wait) + " send:" + send.length);
                     }
 
                 }
