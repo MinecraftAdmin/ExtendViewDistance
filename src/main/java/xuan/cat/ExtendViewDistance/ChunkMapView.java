@@ -45,7 +45,7 @@ public class ChunkMapView {
                    |-----------------------------------------------------------------------|
      */
     public long[]   chunkMap            = new long[64];
-    public int      extendViewDistance  = 1;
+    public int      extendViewDistance  = 32;
     public int      serverViewDistance  = 1;
 
 
@@ -55,17 +55,16 @@ public class ChunkMapView {
 
 
 
-    public long[] move(Location location, boolean force) {
-        return move(ChunkMapView.blockToChunk(location.getX()), ChunkMapView.blockToChunk(location.getZ()), force);
+    public long[] move(Location location) {
+        return move(ChunkMapView.blockToChunk(location.getX()), ChunkMapView.blockToChunk(location.getZ()));
     }
     /**
      * 移動到區塊位置 (中心點)
      * @param moveX 區塊座標X
      * @param moveZ 區塊座標Z
-     * @param force 是否強制
      * @return 如果有區塊被移除, 則會集中回傳在這
      */
-    public long[] move(int moveX, int moveZ, boolean force) {
+    public long[] move(int moveX, int moveZ) {
 
         /*
         先對 chunkMap 進行座標位移
@@ -187,7 +186,7 @@ public class ChunkMapView {
 
 
 
-        if (offsetX != 0 || offsetZ != 0 || force) {
+        if (offsetX != 0 || offsetZ != 0) {
             // 如果座標有發生改動, 更新目前儲存的座標
             this.chunkMap[63] = getChunkKey(moveX, moveZ);
 
@@ -365,10 +364,54 @@ public class ChunkMapView {
         return ((chunkMap[ pointerZ ] >> pointerX) & 0b0000000000000000000000000000000000000000000000000000000000000001L) == 0b0000000000000000000000000000000000000000000000000000000000000001L;
     }
     public void markWait(int pointerX, int pointerZ) {
-        chunkMap[pointerZ] = chunkMap[pointerZ] & (0b1111111111111111111111111111111111111111111111111111111111111110L << pointerX);
+        if (isSend(pointerX, pointerZ))
+            chunkMap[pointerZ] = chunkMap[pointerZ] ^ (0b0000000000000000000000000000000000000000000000000000000000000001L << pointerX);
     }
     public void markSend(int pointerX, int pointerZ) {
         chunkMap[pointerZ] = chunkMap[pointerZ] | (0b0000000000000000000000000000000000000000000000000000000000000001L << pointerX);
+    }
+
+
+
+
+
+    public void markRangeWait(int range) {
+        int edgeStepCount = 0;  // 每個邊, 移動幾次換方向
+        for (int distance = range ; distance < 32 ; distance++ ) {
+
+
+            // 總共有 4 次方向
+            int pointerX = 31 + distance;
+            int pointerZ = 31 + distance;
+            // Z--
+            for (int i = 0 ; i < edgeStepCount ; ++i) {
+
+                this.markWait(pointerX, pointerZ);
+                pointerZ--;
+            }
+            // X--
+            for (int i = 0 ; i < edgeStepCount ; ++i) {
+
+                this.markWait(pointerX, pointerZ);
+                pointerX--;
+            }
+            // Z++
+            for (int i = 0 ; i < edgeStepCount ; ++i) {
+
+                this.markWait(pointerX, pointerZ);
+                pointerZ++;
+            }
+            // X++
+            for (int i = 0 ; i < edgeStepCount ; ++i) {
+
+                this.markWait(pointerX, pointerZ);
+                pointerX++;
+            }
+
+
+            // 下一次循環
+            edgeStepCount += 2;
+        }
     }
 
 

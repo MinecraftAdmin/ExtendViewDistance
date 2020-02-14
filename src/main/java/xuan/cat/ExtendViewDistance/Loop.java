@@ -114,10 +114,13 @@ public class Loop implements Runnable {
 
                     // 初始化區塊視野地圖
                     int playerMaxViewDistance = playerMaxViewDistance(player, extendViewDistance);
-                    boolean force = playerView.chunkMapView.extendViewDistance != playerMaxViewDistance;
+                    boolean changedViewDistance = playerView.chunkMapView.extendViewDistance != playerMaxViewDistance;
+                    if (changedViewDistance) {
+                        playerView.chunkMapView.markRangeWait(playerMaxViewDistance);
+                        playerView.chunkMapView.extendViewDistance = playerMaxViewDistance;
+                    }
                     playerView.chunkMapView.serverViewDistance = serverViewDistance;
-                    playerView.chunkMapView.extendViewDistance = playerMaxViewDistance;
-                    playerView.chunkMapView.move(player.getLocation(), force);
+                    playerView.chunkMapView.move(player.getLocation());
                 }
             }
 
@@ -157,8 +160,12 @@ public class Loop implements Runnable {
 
                 // 沒問題, 進行移動
                 int playerMaxViewDistance = playerMaxViewDistance(playerView.player, extendViewDistance);
-                boolean force = playerView.chunkMapView.extendViewDistance != playerMaxViewDistance;
-                long[] removeChunkKeyList = playerView.chunkMapView.move(playerView.player.getLocation(), force);
+                boolean changedViewDistance = playerView.chunkMapView.extendViewDistance != playerMaxViewDistance;
+                if (changedViewDistance) {
+                    playerView.chunkMapView.markRangeWait(playerMaxViewDistance);
+                    playerView.chunkMapView.extendViewDistance = playerMaxViewDistance;
+                }
+                long[] removeChunkKeyList = playerView.chunkMapView.move(playerView.player.getLocation());
                 // 已經超出視野距離的區塊
                 for (long chunkKey : removeChunkKeyList) {
                     Packet.callServerUnloadChunkPacket(playerView.player, ChunkMapView.getX(chunkKey), ChunkMapView.getZ(chunkKey));
