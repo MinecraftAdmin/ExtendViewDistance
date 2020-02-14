@@ -45,7 +45,7 @@ public class ChunkMapView {
                    |-----------------------------------------------------------------------|
      */
     public long[]   chunkMap            = new long[64];
-    public int      extendViewDistance  = 32;
+    public int      extendViewDistance  = 1;
     public int      serverViewDistance  = 1;
 
 
