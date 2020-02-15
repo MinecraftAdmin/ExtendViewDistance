@@ -398,10 +398,16 @@ public class Loop implements Runnable {
     }
 
 
-    public static void needDelayedSendTick(Player player) {
-        PlayerView playerView = playerPlayerViewHashMap.get(player);
-        if (playerView != null) {
-            playerView.delayedSendTick = Value.delayedSendTick;
+    public static void needDelayedSendTick(Player player, Location from, Location to) {
+        // 傳送距離過遠, 則等待一段時間
+        if (from.getWorld() == to.getWorld() && from.distance(to) > Loop.playerMaxViewDistance(player, Value.extendViewDistance)) {
+
+            PlayerView playerView = playerPlayerViewHashMap.get(player);
+            if (playerView != null) {
+                //playerView.delayedSendTick      = Value.delayedSendTick;
+                playerView.waitingChangeWorld   = true;
+            }
+
         }
     }
 

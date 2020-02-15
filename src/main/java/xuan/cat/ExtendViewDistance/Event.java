@@ -76,10 +76,8 @@ public class Event implements Listener {
         Player      player  = event.getPlayer();
         Location    from    = event.getFrom();
         Location    to      = event.getTo();
-        // 傳送距離過遠, 則等待一段時間
-        if (from.getWorld() == to.getWorld() && from.distance(to) > Loop.playerMaxViewDistance(player, Value.extendViewDistance)) {
-            Loop.needDelayedSendTick(player);
-        }
+
+        Loop.needDelayedSendTick(player, from, to);
     }
 
 
