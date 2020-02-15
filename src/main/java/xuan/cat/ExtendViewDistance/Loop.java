@@ -226,12 +226,14 @@ public class Loop implements Runnable {
                                 //System.out.println( ChunkMapView.getX(chunkKey) + " / " + ChunkMapView.getZ(chunkKey));
                             }
 
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
+                            playerView.totalSend++;
+                            isSend++;
 
-                        playerView.totalSend++;
-                        isSend++;
+                        } catch (Exception ex) {
+                            if (Value.backgroundDebugMode == 1 || Value.backgroundDebugMode == 2)
+                                ex.printStackTrace();
+                            playerView.chunkMapView.markWait(chunkKey);
+                        }
                     }
                 }
             }
@@ -404,7 +406,7 @@ public class Loop implements Runnable {
 
             PlayerView playerView = playerPlayerViewHashMap.get(player);
             if (playerView != null) {
-                //playerView.delayedSendTick      = Value.delayedSendTick;
+                playerView.delayedSendTick      = Value.delayedSendTick;
                 playerView.waitingChangeWorld   = true;
                 for (long isSendChunk : playerView.chunkMapView.getIsSendChunkList()) {
                     Packet.callServerUnloadChunkPacket(playerView.player, ChunkMapView.getX(isSendChunk), ChunkMapView.getZ(isSendChunk));

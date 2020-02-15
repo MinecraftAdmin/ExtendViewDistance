@@ -55,6 +55,7 @@ public class ChunkMapView {
     public static void main(String[] args) {
         ChunkMapView chunkMapView = new ChunkMapView();
         chunkMapView.extendViewDistance = 33;
+        chunkMapView.move(0, 0);
 
         for (int i = 0 ; i < 4000 ; ++i)
             chunkMapView.get();
@@ -62,17 +63,13 @@ public class ChunkMapView {
         System.out.println();
         debug(chunkMapView.getChunkMap());
 
-        chunkMapView.move(0, 0);
-
-        chunkMapView.markRangeWait(32);
-        chunkMapView.extendViewDistance = 32 + 1;
-
-        System.out.println();
+        chunkMapView.markWait(ChunkMapView.getChunkKey(31, -31));
+        //System.out.println();
         debug(chunkMapView.getChunkMap());
     }
-    .
- */
 
+
+ */
 
 
 
@@ -399,6 +396,39 @@ public class ChunkMapView {
     }
     private boolean isSend(int pointerX, int pointerZ) {
         return ((chunkMap[ pointerZ ] >> pointerX) & 0b0000000000000000000000000000000000000000000000000000000000000001L) == 0b0000000000000000000000000000000000000000000000000000000000000001L;
+    }
+
+
+
+    public void markWait(long chunkKey) {
+        // 上一個紀錄的區塊位置 (中心點)
+        int centerX = this.getCenterX();
+        int centerZ = this.getCenterZ();
+
+        int x = getX(chunkKey);
+        int z = getZ(chunkKey);
+
+        int pointerX = 31 + (centerX - x);
+        int pointerZ = 31 + (centerZ - z);
+
+        if (pointerX > 62 || pointerX < 0 || pointerZ > 62 || pointerZ < 0) return;
+
+        markWait(pointerX, pointerZ);
+    }
+    public void markSend(long chunkKey) {
+        // 上一個紀錄的區塊位置 (中心點)
+        int centerX = this.getCenterX();
+        int centerZ = this.getCenterZ();
+
+        int x = getX(chunkKey);
+        int z = getZ(chunkKey);
+
+        int pointerX = 31 + (centerX - x);
+        int pointerZ = 31 + (centerZ - z);
+
+        if (pointerX > 62 || pointerX < 0 || pointerZ > 62 || pointerZ < 0) return;
+
+        markSend(pointerX, pointerZ);
     }
     public void markWait(int pointerX, int pointerZ) {
         if (isSend(pointerX, pointerZ))
