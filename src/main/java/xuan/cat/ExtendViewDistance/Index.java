@@ -98,7 +98,7 @@ TickIsLag: 50
 
         // 開始迴圈線程
         loop = new Loop();
-        singleThreadExecutor = Executors.newCachedThreadPool();
+        singleThreadExecutor = Executors.newSingleThreadExecutor();
         singleThreadExecutor.execute(() -> {
 
             try {
