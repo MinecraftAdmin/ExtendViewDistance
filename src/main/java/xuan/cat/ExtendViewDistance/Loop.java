@@ -203,7 +203,7 @@ public class Loop implements Runnable {
 
                     // 檢查是否符合條件
                     if (Value.worldBlacklist.contains(playerView.world.getName()))  continue; // 在黑名單內
-                    if (playerView.totalSend > Value.tickSendChunkAmountSole)       continue; // 超過單個 tick 能發送的最大量
+                    if (playerView.totalSend >= Value.tickSendChunkAmountSole)      continue; // 超過單個 tick 能發送的最大量
 
                     Long chunkKey = playerView.chunkMapView.get();
                     if (chunkKey != null) {
