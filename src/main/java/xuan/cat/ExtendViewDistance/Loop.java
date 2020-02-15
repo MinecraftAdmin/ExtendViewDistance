@@ -156,6 +156,7 @@ public class Loop implements Runnable {
                     playerView.waitingChangeWorld   = true;
                     long[] isSendChunks = playerView.chunkMapView.getIsSendChunkList();
                     for (long chunkKey : isSendChunks) {
+                        //System.out.println( ChunkMapView.getX(chunkKey) + " / " + ChunkMapView.getZ(chunkKey));
                         Packet.callServerUnloadChunkPacket(playerView.player, ChunkMapView.getX(chunkKey), ChunkMapView.getZ(chunkKey));
                     }
                     playerView.world                = playerView.player.getWorld();
@@ -180,6 +181,7 @@ public class Loop implements Runnable {
                 long[] removeChunkKeyList = playerView.chunkMapView.move(playerView.player.getLocation());
                 // 已經超出視野距離的區塊
                 for (long chunkKey : removeChunkKeyList) {
+                    //System.out.println( ChunkMapView.getX(chunkKey) + " / " + ChunkMapView.getZ(chunkKey));
                     Packet.callServerUnloadChunkPacket(playerView.player, ChunkMapView.getX(chunkKey), ChunkMapView.getZ(chunkKey));
                 }
                 playerView.totalSend = 0;

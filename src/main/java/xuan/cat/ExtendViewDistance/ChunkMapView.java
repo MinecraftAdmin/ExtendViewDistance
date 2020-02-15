@@ -129,9 +129,9 @@ public class ChunkMapView {
                 int z = oldZ + pointerZ - 31;
 
                 // 是否已經不再範圍內
-                if (x < effectiveMinX || x > effectiveMaxX || z < effectiveMinZ || z > effectiveMaxZ)
-                    if (this.isSend(pointerX, pointerZ)) {
-                        this.markWait(pointerX, pointerZ);
+                if (x <= effectiveMinX || x >= effectiveMaxX || z <= effectiveMinZ || z >= effectiveMaxZ)
+                    if (this.markWait(pointerX, pointerZ)) {
+                        //this.markWait(pointerX, pointerZ);
                         removeChunkKeyList[removeChunkKeyListRead++] = getChunkKey(x, z);
                     }
             }
@@ -430,9 +430,13 @@ public class ChunkMapView {
 
         markSend(pointerX, pointerZ);
     }
-    public void markWait(int pointerX, int pointerZ) {
-        if (isSend(pointerX, pointerZ))
+    public boolean markWait(int pointerX, int pointerZ) {
+        if (isSend(pointerX, pointerZ)) {
             chunkMap[pointerZ] = chunkMap[pointerZ] ^ (0b0000000000000000000000000000000000000000000000000000000000000001L << pointerX);
+            return true;
+        } else {
+            return false;
+        }
     }
     public void markSend(int pointerX, int pointerZ) {
         chunkMap[pointerZ] = chunkMap[pointerZ] | (0b0000000000000000000000000000000000000000000000000000000000000001L << pointerX);
