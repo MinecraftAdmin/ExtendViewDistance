@@ -97,8 +97,8 @@ TickIsLag: 50
 
 
         // 開始迴圈線程
-        loop = new Loop();
-        singleThreadExecutor = Executors.newSingleThreadExecutor();
+        loop                    = new Loop();
+        singleThreadExecutor    = Executors.newSingleThreadExecutor();
         singleThreadExecutor.execute(() -> {
 
             try {
@@ -151,6 +151,10 @@ TickIsLag: 50
 
     @Override
     public void onDisable() {
+
+        if (singleThreadExecutor != null) {
+            singleThreadExecutor.shutdown();
+        }
 
         getLogger().info(ChatColor.RED + "Plugin stop!"); // 插件停止!
     }
