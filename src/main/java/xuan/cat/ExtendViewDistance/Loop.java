@@ -258,8 +258,6 @@ public class Loop implements Runnable {
 
                 if (playerView == null || playerView.waitingChangeWorld) continue;
 
-                chunkCache.setMaterial(0, 255, 0, Material.DIAMOND_BLOCK);
-
                 // 防透視礦物作弊
                 // 替換全部指定材質
 
