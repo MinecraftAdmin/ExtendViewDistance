@@ -406,8 +406,10 @@ public class Loop implements Runnable {
             if (playerView != null) {
                 //playerView.delayedSendTick      = Value.delayedSendTick;
                 playerView.waitingChangeWorld   = true;
+                for (long isSendChunk : playerView.chunkMapView.getIsSendChunkList()) {
+                    Packet.callServerUnloadChunkPacket(playerView.player, ChunkMapView.getX(isSendChunk), ChunkMapView.getZ(isSendChunk));
+                }
             }
-
         }
     }
 
