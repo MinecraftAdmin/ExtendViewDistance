@@ -398,6 +398,14 @@ public class Loop implements Runnable {
     }
 
 
+    public static void needDelayedSendTick(Player player) {
+        PlayerView playerView = playerPlayerViewHashMap.get(player);
+        if (playerView != null) {
+            playerView.delayedSendTick = Value.delayedSendTick;
+        }
+    }
+
+
 
 
 

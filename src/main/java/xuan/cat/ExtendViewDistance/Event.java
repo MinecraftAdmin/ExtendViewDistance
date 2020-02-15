@@ -1,9 +1,12 @@
 package xuan.cat.ExtendViewDistance;
 
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.world.WorldInitEvent;
 import xuan.cat.XuanCatAPI.api.event.packet.*;
 
@@ -64,6 +67,19 @@ public class Event implements Listener {
     public void event(ServerLightUpdatePacketEvent event) {
         if (event.getCause() != PacketEvent.Cause.PLUGIN)
             Loop.waitingChangeWorldPacket(event.getPlayer(), event.getTrigger());
+    }
+
+
+
+    @EventHandler
+    public void event(PlayerTeleportEvent event) {
+        Player      player  = event.getPlayer();
+        Location    from    = event.getFrom();
+        Location    to      = event.getTo();
+        // 傳送距離過遠, 則等待一段時間
+        if (from.getWorld() == to.getWorld() && from.distance(to) > Loop.playerMaxViewDistance(player, Value.extendViewDistance)) {
+            Loop.needDelayedSendTick(player);
+        }
     }
 
 

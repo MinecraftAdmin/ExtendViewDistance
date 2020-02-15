@@ -77,11 +77,11 @@ server-field-view-correction: 0
 
 
 # -- 繁體中文 --
-# 每次切換世界都要等待一段時間才發送區塊
+# 每次切換世界 / 長距離傳送, 都要等待一段時間才發送區塊
 # 如果設置太少, 會造成客戶端顯示錯誤
 # 建議數值 ((伺服器 view-distance * 伺服器 view-distance) * 2) + 100
 # -- English --
-# Every time you switch the world, you have to wait for a period of time before sending the chunks.
+# Every time you switch the world / long distance transmission, you have to wait for a period of time before sending the chunk
 # If the setting is too small, it will cause the client to display errors
 # Suggested value: ((Server view-distance * Server view-distance) * 2) + 100
 delayed-send-tick: 100
