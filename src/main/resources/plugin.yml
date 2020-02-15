@@ -3,4 +3,4 @@ version: ${project.version}
 main: xuan.cat.ExtendViewDistance.Index
 depend: [XuanCatAPI]
 api-version: 1.13
-authors: [XUAN_Cat]
+authors: [xuancat0208]
