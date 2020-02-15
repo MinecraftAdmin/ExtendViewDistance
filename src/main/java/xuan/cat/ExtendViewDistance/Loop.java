@@ -169,8 +169,8 @@ public class Loop implements Runnable {
                 }
 
                 // 沒問題, 進行移動
-                int playerMaxViewDistance = playerMaxViewDistance(playerView.player, extendViewDistance);
-                boolean changedViewDistance = playerView.chunkMapView.extendViewDistance != playerMaxViewDistance;
+                int     playerMaxViewDistance   = playerMaxViewDistance(playerView.player, extendViewDistance);
+                boolean changedViewDistance     = playerView.chunkMapView.extendViewDistance != playerMaxViewDistance;
                 if (changedViewDistance) {
                     playerView.chunkMapView.markRangeWait(playerMaxViewDistance - 1);
                     playerView.chunkMapView.extendViewDistance = playerMaxViewDistance;
