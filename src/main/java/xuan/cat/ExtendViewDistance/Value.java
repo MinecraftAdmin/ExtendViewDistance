@@ -8,11 +8,13 @@ import java.util.List;
 import java.util.Map;
 
 public class Value {
-    public static int                       extendViewDistance          = 32;
+    public static boolean                   fastestMode;
+    public static int                       extendViewDistance;
     public static int                       tickSendChunkAmount;
-    public static int                       serverFieldViewCorrection   = 2;
-    public static int                       delayedSendTick             = 100;
-    public static int                       backgroundDebugMode         = 0;
+    public static int                       tickSendChunkAmountSole;
+    public static int                       serverFieldViewCorrection;
+    public static int                       delayedSendTick;
+    public static int                       backgroundDebugMode;
     public static Map<Material, Material[]> conversionMaterialListMap   = new HashMap<>();
     public static List<String>              worldBlacklist              = new ArrayList<>();
     //public static boolean   sendChunkAsync;

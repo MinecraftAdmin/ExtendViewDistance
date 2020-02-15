@@ -1,4 +1,18 @@
 # -- 繁體中文 --
+# 急速模式
+# 直接讀取地圖文件, 不經過伺服器內部處理
+# 1.14 以上的版本開始支持
+# 防止礦物透視, 一樣能正常運行
+# -- English --
+# Fastest mode
+# Read the map file directly, without internal processing by the server
+# 1.14 and later supported
+# Prevent XRAY, normal operation
+fastest-mode: true
+
+
+
+# -- 繁體中文 --
 # 最高可擴展的視野距離
 # 建議值,伺服器設置3-6,插件設置4-32 (最高能到32)
 # 不影響伺服器本身的視野距離
@@ -15,16 +29,30 @@ extend-view-distance: 32
 
 
 # -- 繁體中文 --
-# 每個tick能發送給每個玩家多少個封包
+# 每個tick能發送給全部玩家多少個區塊
 # 過低時區塊則會很慢才給滿玩家
 # 數值取決於網路速度和CPU性能來做調整
 # 越高越好, 但過高可能會造成堵塞
 # -- English --
-# How many packets can each tick send to each player
+# How many chunks can each tick send to players
 # When it is too low, the chunk will be slow to fill the player
 # The value depends on the network speed and CPU performance
 # Higher is better, but too high may cause chunkage
 player-tick-send-chunk-amount: 30
+
+
+
+# -- 繁體中文 --
+# 如果伺服器有 3 位玩家, player-tick-send-chunk-amount: 30, player-tick-send-chunk-amount-sole: 5
+# 每個 tick 都會隨機抽選 30 次玩家, 每個玩家最多只能拿到 5 個區塊
+# 最後因為限制, 總共只發送了 15 區塊 (3 * 15)
+# 這是為了確保玩家不會因為發送區塊過太多而卡頓
+# -- English --
+# If the server has 3 player, player-tick-send-chunk-amount: 30, player-tick-send-chunk-amount-sole: 5
+# Each tick will randomly select 30 players, each player can only get up to 5 chunks
+# Finally, due to restrictions, only 15 chunks were sent in total (3 * 15)
+# This is to ensure that players do not lag because they send too many chunks
+player-tick-send-chunk-amount-sole: 5
 
 
 

@@ -67,6 +67,7 @@ public class Loop implements Runnable {
         public final    List<PacketDelayedTrigger>  packetTriggerListMap    = new ArrayList<>();
         public          boolean                     waitingChangeWorld      = false;
         public          int                         delayedSendTick         = Value.delayedSendTick;
+        public          int                         totalSend               = 0;                        // 單個 tick 累計發送
 
         public boolean isChangeWorld(World moveWorld) {
             this.waitingChangeWorld = !this.world.equals(moveWorld);
@@ -180,7 +181,7 @@ public class Loop implements Runnable {
                 for (long chunkKey : removeChunkKeyList) {
                     Packet.callServerUnloadChunkPacket(playerView.player, ChunkMapView.getX(chunkKey), ChunkMapView.getZ(chunkKey));
                 }
-
+                playerView.totalSend = 0;
                 playerViews[ playerViewsRead++ ] = playerView;
             }
 
@@ -200,14 +201,20 @@ public class Loop implements Runnable {
                 for (int i = 0, isSend = 0; i < Value.tickSendChunkAmount && isSend < Value.tickSendChunkAmount; ++i) {
                     PlayerView playerView = playerViews[(int) (Math.random() * playerViewsRead)];
 
+                    // 檢查是否符合條件
+                    if (Value.worldBlacklist.contains(playerView.world.getName()))  continue; // 在黑名單內
+                    if (playerView.totalSend > Value.tickSendChunkAmountSole)       continue; // 超過單個 tick 能發送的最大量
+
                     Long chunkKey = playerView.chunkMapView.get();
-
-                    if (Value.worldBlacklist.contains(playerView.world.getName())) continue; // 在黑名單內
-
                     if (chunkKey != null) {
                         try {
 
-                            ExtendChunkCache chunkCache = NMS.World(playerView.world).getChunkCache(ExtendChunk.Status.EMPTY, ChunkMapView.getX(chunkKey), ChunkMapView.getZ(chunkKey), true);
+                            ExtendChunkCache chunkCache;
+                            if (Value.fastestMode) {
+                                chunkCache = NMS.World(playerView.world).getChunkCache(ChunkMapView.getX(chunkKey), ChunkMapView.getZ(chunkKey));
+                            } else {
+                                chunkCache = NMS.Chunk(NMS.World(playerView.world).getChunk(ExtendChunk.Status.LIGHT, ChunkMapView.getX(chunkKey), ChunkMapView.getZ(chunkKey), true)).asCache(playerView.world);
+                            }
 
                             if (chunkCache != null) {
                                 waitingSendPlayerView   [ waitingSendRead ] = playerView;
@@ -223,6 +230,7 @@ public class Loop implements Runnable {
                             ex.printStackTrace();
                         }
 
+                        playerView.totalSend++;
                         isSend++;
                     }
                 }
@@ -250,28 +258,24 @@ public class Loop implements Runnable {
 
                 if (playerView == null || playerView.waitingChangeWorld) continue;
 
+                chunkCache.setMaterial(0, 255, 0, Material.DIAMOND_BLOCK);
 
                 // 防透視礦物作弊
                 // 替換全部指定材質
-                try {
 
-                    for (Map.Entry<Material, Material[]> entry : Value.conversionMaterialListMap.entrySet()) {
-                        chunkCache.replaceAllMaterial(entry.getValue(), entry.getKey());
-                    }
-
-                    Chunk chunk = chunkCache.asChunk(world);
-
-                    Packet.callServerMapChunkPacket(player, chunk);
-                    Packet.callServerLightUpdatePacket(player, chunk);
-
-
-                    // 除錯用
-                    if (isSendDebugList != null)
-                        isSendDebugList.put(player, playerView);
-
-                } catch (Exception ex) {
-                    ex.printStackTrace();
+                for (Map.Entry<Material, Material[]> entry : Value.conversionMaterialListMap.entrySet()) {
+                    chunkCache.replaceAllMaterial(entry.getValue(), entry.getKey());
                 }
+
+                Chunk chunk = chunkCache.asChunk(world);
+
+                Packet.callServerMapChunkPacket(player, chunk, true);
+                Packet.callServerLightUpdatePacket(player, chunk);
+
+
+                // 除錯用
+                if (isSendDebugList != null)
+                    isSendDebugList.put(player, playerView);
             }
 
 
