@@ -72,7 +72,7 @@ player-tick-send-chunk-amount-sole: 5
 # Or missing a few lap chunk halfway
 # adjust this value
 # Correction: server.properties -> view-distance + server-field-view-correction
-server-field-view-correction: 0
+server-field-view-correction: 1
 
 
 

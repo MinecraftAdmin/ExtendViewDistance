@@ -115,8 +115,8 @@ public class Loop implements Runnable {
                     playerView.world        = player.getWorld();
 
                     // 初始化區塊視野地圖
-                    int playerMaxViewDistance = playerMaxViewDistance(player, extendViewDistance);
-                    boolean changedViewDistance = playerView.chunkMapView.extendViewDistance != playerMaxViewDistance;
+                    int     playerMaxViewDistance   = playerMaxViewDistance(player, extendViewDistance);
+                    boolean changedViewDistance     = playerView.chunkMapView.extendViewDistance != playerMaxViewDistance;
                     if (changedViewDistance) {
                         playerView.chunkMapView.markRangeWait(playerMaxViewDistance - 1);
                         playerView.chunkMapView.extendViewDistance = playerMaxViewDistance;
