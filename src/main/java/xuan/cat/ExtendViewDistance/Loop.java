@@ -1,6 +1,7 @@
 package xuan.cat.ExtendViewDistance;
 
 import org.bukkit.*;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
 import xuan.cat.XuanCatAPI.NMS;
 import xuan.cat.XuanCatAPI.Packet;
@@ -118,7 +119,7 @@ public class Loop implements Runnable {
                     int     playerMaxViewDistance   = playerMaxViewDistance(player, extendViewDistance);
                     boolean changedViewDistance     = playerView.chunkMapView.extendViewDistance != playerMaxViewDistance;
                     if (changedViewDistance) {
-                        playerView.chunkMapView.markRangeWait(playerMaxViewDistance - 1);
+                        playerView.chunkMapView.markRangeWait(playerMaxViewDistance);
                         playerView.chunkMapView.extendViewDistance = playerMaxViewDistance;
                         Packet.callServerViewDistancePacket(playerView.player, playerMaxViewDistance);
                     }
@@ -172,7 +173,7 @@ public class Loop implements Runnable {
                 int     playerMaxViewDistance   = playerMaxViewDistance(playerView.player, extendViewDistance);
                 boolean changedViewDistance     = playerView.chunkMapView.extendViewDistance != playerMaxViewDistance;
                 if (changedViewDistance) {
-                    playerView.chunkMapView.markRangeWait(playerMaxViewDistance - 1);
+                    playerView.chunkMapView.markRangeWait(playerMaxViewDistance);
                     playerView.chunkMapView.extendViewDistance = playerMaxViewDistance;
                     Packet.callServerViewDistancePacket(playerView.player, playerMaxViewDistance);
                 }
@@ -263,7 +264,7 @@ public class Loop implements Runnable {
                 // 防透視礦物作弊
                 // 替換全部指定材質
 
-                for (Map.Entry<Material, Material[]> entry : Value.conversionMaterialListMap.entrySet()) {
+                for (Map.Entry<BlockData, BlockData[]> entry : Value.conversionMaterialListMap.entrySet()) {
                     chunkCache.replaceAllMaterial(entry.getValue(), entry.getKey());
                 }
 

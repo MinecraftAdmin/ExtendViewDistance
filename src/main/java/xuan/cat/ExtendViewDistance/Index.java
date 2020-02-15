@@ -3,6 +3,7 @@ package xuan.cat.ExtendViewDistance;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.Plugin;
@@ -16,6 +17,8 @@ import java.util.concurrent.Executors;
 public final class Index extends JavaPlugin {
 
     public static Plugin plugin;
+    Loop            loop;
+    ExecutorService singleThreadExecutor;
 
     @Override
     public void onEnable() {
@@ -70,11 +73,11 @@ public final class Index extends JavaPlugin {
                         }
 
 
-                        Material[] materials = new Material[materialList.size()];
+                        BlockData[] materials = new BlockData[materialList.size()];
                         for (int i = 0 ; i < materials.length ; ++i )
-                            materials[i] = materialList.get(i);
+                            materials[i] = materialList.get(i).createBlockData();
 
-                        Value.conversionMaterialListMap.put(toMaterial, materials);
+                        Value.conversionMaterialListMap.put(toMaterial.createBlockData(), materials);
                     }
                 }
             }
@@ -94,8 +97,8 @@ TickIsLag: 50
 
 
         // 開始迴圈線程
-        Loop loop = new Loop();
-        ExecutorService singleThreadExecutor = Executors.newSingleThreadExecutor();
+        loop = new Loop();
+        singleThreadExecutor = Executors.newCachedThreadPool();
         singleThreadExecutor.execute(() -> {
 
             try {

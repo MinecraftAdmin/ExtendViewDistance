@@ -129,7 +129,7 @@ public class ChunkMapView {
                 int z = oldZ + pointerZ - 31;
 
                 // 是否已經不再範圍內
-                if (x <= effectiveMinX || x >= effectiveMaxX || z <= effectiveMinZ || z >= effectiveMaxZ)
+                if (x < effectiveMinX || x > effectiveMaxX || z < effectiveMinZ || z > effectiveMaxZ)
                     if (this.isSend(pointerX, pointerZ)) {
                         this.markWait(pointerX, pointerZ);
                         removeChunkKeyList[removeChunkKeyListRead++] = getChunkKey(x, z);
