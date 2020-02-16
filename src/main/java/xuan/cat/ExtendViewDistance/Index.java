@@ -97,12 +97,9 @@ TickIsLag: 50
 
 
         // 開始迴圈線程
-        loop = new Loop();
-        Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> {
-            loop.run();
-        }, 0, 1);
+        loop                    = new Loop();
         /*
-        singleThreadExecutor    = Executors.newSingleThreadExecutor();
+        singleThreadExecutor    = Executors.newCachedThreadPool();
         singleThreadExecutor.execute(() -> {
 
             try {
@@ -128,14 +125,12 @@ TickIsLag: 50
                 ex.printStackTrace();
             }
         });
-
-         */
-        /*
+        */
         Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
-
+            loop.run();
         }, 0, 1); // 顯示更遠的區塊給玩家
 
-         */
+
 
 
 
