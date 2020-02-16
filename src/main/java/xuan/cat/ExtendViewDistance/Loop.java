@@ -170,7 +170,7 @@ public class Loop implements Runnable {
                     continue;
                 }
 
-                // 沒問題, 進行移動
+                // 計算視野距離
                 int     playerMaxViewDistance   = playerMaxViewDistance(playerView.player, extendViewDistance);
                 boolean changedViewDistance     = playerView.chunkMapView.extendViewDistance != playerMaxViewDistance;
                 if (changedViewDistance) {
@@ -178,7 +178,20 @@ public class Loop implements Runnable {
                     playerView.chunkMapView.extendViewDistance = playerMaxViewDistance;
                     Packet.callServerViewDistancePacket(playerView.player, playerMaxViewDistance);
                 }
-                long[] removeChunkKeyList = playerView.chunkMapView.move(playerView.player.getLocation());
+
+                // 計算是否大幅度超出範圍
+                Location move = playerView.player.getLocation();
+                if (Math.abs(playerView.chunkMapView.getCenterX() - ChunkMapView.blockToChunk(move.getX())) > playerMaxViewDistance || Math.abs(playerView.chunkMapView.getCenterZ() - ChunkMapView.blockToChunk(move.getZ())) > playerMaxViewDistance) {
+                    playerView.delayedSendTick      = Value.delayedSendTick;
+                    playerView.waitingChangeWorld   = true;
+                    for (long isSendChunk : playerView.chunkMapView.getIsSendChunkList()) {
+                        Packet.callServerUnloadChunkPacket(playerView.player, ChunkMapView.getX(isSendChunk), ChunkMapView.getZ(isSendChunk));
+                    }
+                    continue;
+                }
+
+                // 沒問題, 進行移動
+                long[] removeChunkKeyList = playerView.chunkMapView.move(move);
                 // 已經超出視野距離的區塊
                 for (long chunkKey : removeChunkKeyList) {
                     //System.out.println( ChunkMapView.getX(chunkKey) + " / " + ChunkMapView.getZ(chunkKey));
