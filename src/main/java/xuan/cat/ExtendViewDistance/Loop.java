@@ -274,11 +274,10 @@ public class Loop implements Runnable {
                 ExtendChunkCache    chunkCache  = waitingSendChunkCache [ i ];
 
 
-                if (playerView == null || playerView.waitingChangeWorld) continue;
+                if (playerView == null || playerView.waitingChangeWorld || world == null || chunkCache == null) continue;
 
                 // 防透視礦物作弊
                 // 替換全部指定材質
-
                 for (Map.Entry<BlockData, BlockData[]> entry : Value.conversionMaterialListMap.entrySet()) {
                     chunkCache.replaceAllMaterial(entry.getValue(), entry.getKey());
                 }
@@ -416,12 +415,14 @@ public class Loop implements Runnable {
     }
 
 
-    public static void needDelayedSendTick(Player player, Location from, Location to) {
+    public static void needDelayedSendTick(Player player, Location from, Location move) {
         // 傳送距離過遠, 則等待一段時間
-        if (from.getWorld() == to.getWorld() && from.distance(to) > Loop.playerMaxViewDistance(player, Value.extendViewDistance)) {
 
-            PlayerView playerView = playerPlayerViewHashMap.get(player);
-            if (playerView != null) {
+        int         playerMaxViewDistance   = Loop.playerMaxViewDistance(player, Value.extendViewDistance);
+        PlayerView  playerView              = playerPlayerViewHashMap.get(player);
+        if (playerView != null) {
+
+            if (from.getWorld().equals(move.getWorld()) && (Math.abs(ChunkMapView.blockToChunk(from.getX() - move.getX())) > playerMaxViewDistance || Math.abs(ChunkMapView.blockToChunk(from.getZ() - move.getZ())) > playerMaxViewDistance)) {
                 playerView.delayedSendTick      = Value.delayedSendTick;
                 playerView.waitingChangeWorld   = true;
                 for (long isSendChunk : playerView.chunkMapView.getIsSendChunkList()) {
