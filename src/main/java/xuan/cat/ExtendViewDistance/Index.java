@@ -97,7 +97,11 @@ TickIsLag: 50
 
 
         // 開始迴圈線程
-        loop                    = new Loop();
+        loop = new Loop();
+        Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> {
+            loop.run();
+        }, 0, 1);
+        /*
         singleThreadExecutor    = Executors.newSingleThreadExecutor();
         singleThreadExecutor.execute(() -> {
 
@@ -124,6 +128,8 @@ TickIsLag: 50
                 ex.printStackTrace();
             }
         });
+
+         */
         /*
         Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
 
