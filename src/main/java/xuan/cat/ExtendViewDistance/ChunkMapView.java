@@ -469,7 +469,9 @@ public class ChunkMapView {
 
 
     public void clear() {
+        long chunkKey = this.getChunkKey();
         this.chunkMap = new long[64];
+        this.setChunkKey(chunkKey);
     }
 
 
@@ -518,6 +520,12 @@ public class ChunkMapView {
 
 
 
+    public long getChunkKey() {
+        return chunkMap[63];
+    }
+    public void setChunkKey(long chunkKey) {
+        chunkMap[63] = chunkKey;
+    }
     public int getCenterX() {
         return (int) (chunkMap[63] >> 32);
     }

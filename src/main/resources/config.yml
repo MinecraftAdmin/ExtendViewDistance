@@ -1,18 +1,4 @@
 # -- 繁體中文 --
-# 急速模式
-# 直接讀取地圖文件, 不經過伺服器內部處理
-# 1.14 以上的版本開始支持
-# 防止礦物透視, 一樣能正常運行
-# -- English --
-# Fastest mode
-# Read the map file directly, without internal processing by the server
-# 1.14 and later supported
-# Prevent XRAY, normal operation
-fastest-mode: true
-
-
-
-# -- 繁體中文 --
 # 最高可擴展的視野距離
 # 不影響伺服器本身的視野距離
 # 實際上是依照客戶端的視野距離來調整,但如果客戶端條超過此限值,一樣只有此限制的視野距離

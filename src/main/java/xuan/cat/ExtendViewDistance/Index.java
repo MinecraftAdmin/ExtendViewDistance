@@ -12,7 +12,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public final class Index extends JavaPlugin {
 
@@ -30,7 +29,6 @@ public final class Index extends JavaPlugin {
         // 取得配置文件
         FileConfiguration configuration = getConfig();
 
-        Value.fastestMode               = configuration.getBoolean(     "fastest-mode",                         true);
         Value.extendViewDistance        = configuration.getInt(         "extend-view-distance",                 32);
         if (Value.extendViewDistance > 32) Value.extendViewDistance = 32;
 

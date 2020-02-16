@@ -178,7 +178,7 @@ public class Loop implements Runnable {
                     playerView.chunkMapView.extendViewDistance = playerMaxViewDistance;
                     Packet.callServerViewDistancePacket(playerView.player, playerMaxViewDistance);
                 }
-
+/*
                 // 計算是否大幅度超出範圍
                 Location move = playerView.player.getLocation();
                 if (Math.abs(playerView.chunkMapView.getCenterX() - ChunkMapView.blockToChunk(move.getX())) > playerMaxViewDistance || Math.abs(playerView.chunkMapView.getCenterZ() - ChunkMapView.blockToChunk(move.getZ())) > playerMaxViewDistance) {
@@ -186,8 +186,10 @@ public class Loop implements Runnable {
                     playerView.waitingChangeWorld   = true;
                 }
 
+ */
+
                 // 沒問題, 進行移動
-                long[] removeChunkKeyList = playerView.chunkMapView.move(move);
+                long[] removeChunkKeyList = playerView.chunkMapView.move(playerView.player.getLocation());
                 // 已經超出視野距離的區塊
                 for (long chunkKey : removeChunkKeyList) {
                     //System.out.println( ChunkMapView.getX(chunkKey) + " / " + ChunkMapView.getZ(chunkKey));
@@ -221,13 +223,7 @@ public class Loop implements Runnable {
                     if (chunkKey != null) {
                         try {
 
-                            ExtendChunkCache chunkCache;
-                            if (Value.fastestMode) {
-                                chunkCache = NMS.World(playerView.world).getChunkCache(ChunkMapView.getX(chunkKey), ChunkMapView.getZ(chunkKey));
-                            } else {
-                                chunkCache = NMS.Chunk(NMS.World(playerView.world).getChunk(ExtendChunk.Status.LIGHT, ChunkMapView.getX(chunkKey), ChunkMapView.getZ(chunkKey), true)).asCache(playerView.world);
-                            }
-
+                            ExtendChunkCache chunkCache = NMS.World(playerView.world).getChunkCache(ChunkMapView.getX(chunkKey), ChunkMapView.getZ(chunkKey));
                             if (chunkCache != null) {
                                 waitingSendPlayerView   [ waitingSendRead ] = playerView;
                                 waitingSendPlayer       [ waitingSendRead ] = playerView.player;
@@ -424,6 +420,7 @@ public class Loop implements Runnable {
                 for (long isSendChunk : playerView.chunkMapView.getIsSendChunkList()) {
                     Packet.callServerUnloadChunkPacket(playerView.player, ChunkMapView.getX(isSendChunk), ChunkMapView.getZ(isSendChunk));
                 }
+                playerView.chunkMapView.clear();
             }
         }
     }
