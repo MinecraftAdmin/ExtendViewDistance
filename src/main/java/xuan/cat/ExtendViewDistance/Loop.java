@@ -184,10 +184,6 @@ public class Loop implements Runnable {
                 if (Math.abs(playerView.chunkMapView.getCenterX() - ChunkMapView.blockToChunk(move.getX())) > playerMaxViewDistance || Math.abs(playerView.chunkMapView.getCenterZ() - ChunkMapView.blockToChunk(move.getZ())) > playerMaxViewDistance) {
                     playerView.delayedSendTick      = Value.delayedSendTick;
                     playerView.waitingChangeWorld   = true;
-                    for (long isSendChunk : playerView.chunkMapView.getIsSendChunkList()) {
-                        Packet.callServerUnloadChunkPacket(playerView.player, ChunkMapView.getX(isSendChunk), ChunkMapView.getZ(isSendChunk));
-                    }
-                    continue;
                 }
 
                 // 沒問題, 進行移動
