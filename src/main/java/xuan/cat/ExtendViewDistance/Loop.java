@@ -6,7 +6,6 @@ import org.bukkit.entity.Player;
 import xuan.cat.XuanCatAPI.NMS;
 import xuan.cat.XuanCatAPI.Packet;
 import xuan.cat.XuanCatAPI.api.event.packet.PacketDelayedTrigger;
-import xuan.cat.XuanCatAPI.api.nms.world.ExtendChunk;
 import xuan.cat.XuanCatAPI.api.nms.world.ExtendChunkCache;
 
 import java.util.*;
@@ -49,7 +48,7 @@ public class Loop implements Runnable {
 
 
 
-    private static          boolean                 isRun                   = false;            // 正在運行中
+    private static volatile boolean                 isRun                   = false;            // 正在運行中
     private static final    Map<Player, PlayerView> playerPlayerViewHashMap = new HashMap<>();
 
 
