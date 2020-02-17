@@ -122,18 +122,22 @@ public class ChunkMapView {
         int effectiveMinZ = moveZ - extendViewDistance;
         int effectiveMaxX = moveX + extendViewDistance;
         int effectiveMaxZ = moveZ + extendViewDistance;
+        {
+            int pointerX;
+            int pointerZ;
+            int x;
+            int z;
+            for (pointerX = 0 ; pointerX < 63 ; ++pointerX) {
+                for (pointerZ = 0 ; pointerZ < 63 ; ++pointerZ) {
 
-        for (int pointerX = 0 ; pointerX < 63 ; ++pointerX) {
-            for (int pointerZ = 0 ; pointerZ < 63 ; ++pointerZ) {
-                int x = oldX + pointerX - 31;
-                int z = oldZ + pointerZ - 31;
+                    x = oldX + pointerX - 31;
+                    z = oldZ + pointerZ - 31;
 
-                // 是否已經不再範圍內
-                if (x <= effectiveMinX || x >= effectiveMaxX || z <= effectiveMinZ || z >= effectiveMaxZ)
-                    if (this.markWait(pointerX, pointerZ)) {
-                        //this.markWait(pointerX, pointerZ);
-                        removeChunkKeyList[removeChunkKeyListRead++] = getChunkKey(x, z);
-                    }
+                    // 是否已經不再範圍內
+                    if (x <= effectiveMinX || x >= effectiveMaxX || z <= effectiveMinZ || z >= effectiveMaxZ)
+                        if (this.markWait(pointerX, pointerZ))
+                            removeChunkKeyList[removeChunkKeyListRead++] = getChunkKey(x, z);
+                }
             }
         }
 
@@ -177,9 +181,10 @@ public class ChunkMapView {
         }
         // 座標Z 發生改動
         if (offsetZ != 0) {
-            long[] newChunkMap = new long[64];
+            long[]  newChunkMap = new long[64];
+            int     z;
             for (int i = 0, s = 63; i < s; i++) {
-                int z = i - offsetZ;
+                z = i - offsetZ;
                 if (z >= 0 && z < 63)
                     newChunkMap[ z ] = this.chunkMap[ i ];
             }
@@ -328,60 +333,68 @@ public class ChunkMapView {
          */
 
         int edgeStepCount = 0;  // 每個邊, 移動幾次換方向
-        for (int distance = 0 ; distance < 32 && distance < extendViewDistance ; distance++ ) {
+        {
+            int readX;
+            int readZ;
+            int pointerX;
+            int pointerZ;
+            int i;
+            for (int distance = 0 ; distance < 32 && distance < extendViewDistance ; distance++ ) {
 
-            // 總共有 4 次方向
-            int readX = distance;
-            int readZ = distance;
-            int pointerX = 31 + distance;
-            int pointerZ = 31 + distance;
-            // Z--
-            for (int i = 0 ; i < edgeStepCount ; ++i) {
+                // 總共有 4 次方向
+                readX       = distance;
+                readZ       = distance;
+                pointerX    = 31 + distance;
+                pointerZ    = 31 + distance;
 
-                if (this.isWait(pointerX, pointerZ)) {
-                    this.markSend(pointerX, pointerZ);
-                    return getChunkKey(centerX - readX, centerZ - readZ);
+                // Z--
+                for (i = 0 ; i < edgeStepCount ; ++i) {
+
+                    if (this.isWait(pointerX, pointerZ)) {
+                        this.markSend(pointerX, pointerZ);
+                        return getChunkKey(centerX - readX, centerZ - readZ);
+                    }
+
+                    pointerZ--;
+                    readZ--;
+                }
+                // X--
+                for (i = 0 ; i < edgeStepCount ; ++i) {
+
+                    if (this.isWait(pointerX, pointerZ)) {
+                        this.markSend(pointerX, pointerZ);
+                        return getChunkKey(centerX - readX, centerZ - readZ);
+                    }
+
+                    pointerX--;
+                    readX--;
+                }
+                // Z++
+                for (i = 0 ; i < edgeStepCount ; ++i) {
+
+                    if (this.isWait(pointerX, pointerZ)) {
+                        this.markSend(pointerX, pointerZ);
+                        return getChunkKey(centerX - readX, centerZ - readZ);
+                    }
+
+                    pointerZ++;
+                    readZ++;
+                }
+                // X++
+                for (i = 0 ; i < edgeStepCount ; ++i) {
+
+                    if (this.isWait(pointerX, pointerZ)) {
+                        this.markSend(pointerX, pointerZ);
+                        return getChunkKey(centerX - readX, centerZ - readZ);
+                    }
+
+                    pointerX++;
+                    readX++;
                 }
 
-                pointerZ--;
-                readZ--;
+                // 下一次循環
+                edgeStepCount += 2;
             }
-            // X--
-            for (int i = 0 ; i < edgeStepCount ; ++i) {
-
-                if (this.isWait(pointerX, pointerZ)) {
-                    this.markSend(pointerX, pointerZ);
-                    return getChunkKey(centerX - readX, centerZ - readZ);
-                }
-
-                pointerX--;
-                readX--;
-            }
-            // Z++
-            for (int i = 0 ; i < edgeStepCount ; ++i) {
-
-                if (this.isWait(pointerX, pointerZ)) {
-                    this.markSend(pointerX, pointerZ);
-                    return getChunkKey(centerX - readX, centerZ - readZ);
-                }
-
-                pointerZ++;
-                readZ++;
-            }
-            // X++
-            for (int i = 0 ; i < edgeStepCount ; ++i) {
-
-                if (this.isWait(pointerX, pointerZ)) {
-                    this.markSend(pointerX, pointerZ);
-                    return getChunkKey(centerX - readX, centerZ - readZ);
-                }
-
-                pointerX++;
-                readX++;
-            }
-
-            // 下一次循環
-            edgeStepCount += 2;
         }
 
 
@@ -457,8 +470,10 @@ public class ChunkMapView {
         int rangeMin = 31 - range;
         int rangeMax = 31 + range;
 
-        for (int pointerX = 0 ; pointerX < 63 ; ++pointerX) {
-            for (int pointerZ = 0 ; pointerZ < 63 ; ++pointerZ) {
+        int pointerX;
+        int pointerZ;
+        for (pointerX = 0 ; pointerX < 63 ; ++pointerX) {
+            for (pointerZ = 0 ; pointerZ < 63 ; ++pointerZ) {
                 if (pointerX <= rangeMin || pointerX >= rangeMax || pointerZ <= rangeMin || pointerZ >= rangeMax)
                     this.markWait(pointerX, pointerZ);
             }
@@ -489,10 +504,14 @@ public class ChunkMapView {
         int     isSendChunksRead    = 0;
 
         // 將那些已經不再範圍內的區塊, 增加到緩存忠
-        for (int pointerX = 0 ; pointerX < 63 ; ++pointerX) {
-            for (int pointerZ = 0 ; pointerZ < 63 ; ++pointerZ) {
-                int x = centerX + pointerX - 31;
-                int z = centerZ + pointerZ - 31;
+        int pointerX;
+        int pointerZ;
+        int x;
+        int z;
+        for (pointerX = 0 ; pointerX < 63 ; ++pointerX) {
+            for (pointerZ = 0 ; pointerZ < 63 ; ++pointerZ) {
+                x = centerX + pointerX - 31;
+                z = centerZ + pointerZ - 31;
 
                     if (this.isSend(pointerX, pointerZ))
                         isSendChunks[ isSendChunksRead++ ] = getChunkKey(x, z);
