@@ -52,7 +52,7 @@ tick-read-chunk-amount: 60
 # 如果伺服器有 3 位玩家, 每個 tick 都會隨機抽選 tick-read-chunk-amount 次玩家
 # 如果有玩家拿到太多區塊 (大於 tick-assign-each-player-max-chunk-amount) 的話, 會重新抽選其他玩家
 # 避免玩家太快拿到大量區塊而卡頓
-# 建議值: player-tick-send-chunk-amount / 平均在線玩家人數
+# 建議值: tick-read-chunk-amount / 平均在線玩家人數
 # 不要少於 1, 且不要大於 40
 # -- English --
 # How many chunks can each player send at each tick (1 tick = 1 second)
@@ -60,7 +60,7 @@ tick-read-chunk-amount: 60
 # If the server has 3 players, each tick will randomly select tick-read-chunk-amount players
 # If a player gets too many chunks (tick-assign-each-player-max-chunk-amount), other players will be drawn again
 # Avoid players getting too fast and getting stuck
-# Recommended value: player-tick-send-chunk-amount / (Average online players)
+# Recommended value: tick-read-chunk-amount / Average online players
 # No less than 1, and no more than 40
 tick-assign-each-player-max-chunk-amount: 10
 
