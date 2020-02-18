@@ -13,13 +13,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 
 public final class Index extends JavaPlugin {
 
-    public static Plugin plugin;
-    Loop            loop;
-    ExecutorService singleThreadExecutor;
+    public static Plugin    plugin;
+    public static Loop      loop        = null;
+    public static Thread    run         = null;
+    //ExecutorService executorService;
+    //ExecutorService singleThreadExecutor;
 
     @Override
     public void onEnable() {
@@ -31,16 +32,16 @@ public final class Index extends JavaPlugin {
         // 取得配置文件
         FileConfiguration configuration = getConfig();
 
-        Value.extendViewDistance        = configuration.getInt(         "extend-view-distance",                 32);
+        Value.extendViewDistance                    = configuration.getInt(         "extend-view-distance",                         32);
         if (Value.extendViewDistance > 32) Value.extendViewDistance = 32;
 
-        Value.tickSendChunkAmount       = configuration.getInt(         "player-tick-send-chunk-amount",        30);
-        Value.tickSendChunkAmountSole   = configuration.getInt(         "player-tick-send-chunk-amount-sole",   5);
-        Value.serverFieldViewCorrection = configuration.getInt(         "server-field-view-correction",         0);
-        Value.worldBlacklist            = configuration.getStringList(  "world-blacklist");
-        Value.delayedSendTick           = configuration.getInt(         "delayed-send-tick",                    100);
-        Value.backgroundDebugMode       = configuration.getInt(         "background-debug-mode",                0);
-        Value.stressTestMode            = configuration.getInt(         "stress-test-mode",                     0);
+        Value.tickReadChunkAmount                   = configuration.getInt(         "tick-read-chunk-amount",                       30);
+        Value.tickAssignEachPlayerMaxChunkAmount    = configuration.getInt(         "tick-assign-each-player-max-chunk-amount",     5);
+        Value.serverFieldViewCorrection             = configuration.getInt(         "server-field-view-correction",                 0);
+        Value.worldBlacklist                        = configuration.getStringList(  "world-blacklist");
+        Value.delayedSendTick                       = configuration.getInt(         "delayed-send-tick",                            100);
+        Value.backgroundDebugMode                   = configuration.getInt(         "background-debug-mode",                        0);
+        Value.stressTestMode                        = configuration.getInt(         "stress-test-mode",                             0);
 
         ConfigurationSection preventXray = configuration.getConfigurationSection(   "prevent-xray");
         if (preventXray != null) {
@@ -102,7 +103,35 @@ newScheduledThreadPool
 
 
         // 開始迴圈線程
-        loop                    = new Loop();
+        loop    = new Loop();
+        // https://yu-jack.github.io/2019/02/19/java-executor/
+        run     = new Thread(() -> {
+            try {
+                Thread.sleep(25);   // 先停止 25 毫秒
+                while (true) {
+
+                    // 計算耗時
+                    long timeStart = System.currentTimeMillis();
+
+                    loop.runView();
+
+                    long timeEnd = System.currentTimeMillis();
+                    long sleep = 1000 - (timeEnd - timeStart);
+                    if (sleep > 0) {
+                        Thread.sleep(sleep);   // 每 25 毫秒運行一次
+                    }
+                }
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
+        run.setPriority(Thread.MIN_PRIORITY);
+        run.start();
+
+
+        //thread.setPriority(Thread.MIN_PRIORITY);
+        //thread.start();
         /*
         singleThreadExecutor    = Executors.newCachedThreadPool();
         singleThreadExecutor.execute(() -> {
@@ -131,9 +160,14 @@ newScheduledThreadPool
             }
         });
         */
+        /*
+        ScheduledExecutorService scheduleAtFixedRate = Executors.newScheduledThreadPool(6);
+        scheduleAtFixedRate.scheduleWithFixedDelay();
         Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
             loop.run();
         }, 0, 1); // 顯示更遠的區塊給玩家
+
+         */
 
 
 
@@ -157,10 +191,16 @@ newScheduledThreadPool
 
     @Override
     public void onDisable() {
-
+/*
         if (singleThreadExecutor != null) {
             singleThreadExecutor.shutdown();
         }
+
+
+ */
+
+        if (run != null)
+            run.interrupt();
 
         getLogger().info(ChatColor.RED + "Plugin stop!"); // 插件停止!
     }

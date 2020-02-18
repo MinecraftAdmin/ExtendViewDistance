@@ -15,76 +15,67 @@ extend-view-distance: 32
 
 
 # -- 繁體中文 --
-# 每個tick能發送給全部玩家多少個區塊
+# 每個 tick 能發送給全部玩家多少個區塊 (1 tick = 1 秒)
 # 過低時區塊則會很慢才給滿玩家
 # 數值取決於網路速度和CPU性能來做調整
 # 越高越好, 但過高可能會造成堵塞
-# 如果伺服器長時間發送大量區塊, 會開始卡頓, 嘗試增加記憶體
+# 伺服器順暢指標, 如果通過以下測試, 代表此值在伺服器接受範圍內:
+#   tick-read-chunk-amount / 線上玩家數量 = tick-assign-each-player-max-chunk-amount
+#   在一個已經有存在大量區塊的地圖中, 全部線上玩家拿取鞘翅, 朝向不同的方向滑翔
+#   如果持續至少 10 分鐘沒有導致 tps 下降, 則代表此值可以套用
 # 伺服器性能建議值:
-#   不佳 5
-#   一般 10
-#   稍好 30
-#   高效 60
+#   不佳 20
+#   一般 40
+#   稍好 70
+#   高效 110
 # -- English --
-# How many chunks can each tick send to players
+# How many chunks can each tick send to players (1 tick = 1 second)
 # When it is too low, the chunk will be slow to fill the player
 # The value depends on the network speed and CPU performance
 # Higher is better, but too high may cause blockages
-# If the server sends a large number of chunks for a long time, it will start to freeze, try to increase the memory
+# Server smoothness indicator, if it passes the following tests, it means that this value is within the server's acceptance range:
+#   tick-read-chunk-amount / number of online players = tick-assign-each-player-max-chunk-amount
+#   In a map that already has a large number of chunks, all online players ues the elytra and glide in different directions
+#   If there is no decrease in tps for at least 10 minutes, this value can be applied
 # Recommended server performance:
-#   Poor    5
-#   General 10
-#   Better  30
-#   High    60
-player-tick-send-chunk-amount: 30
+#   Poor    20
+#   General 60
+#   Better  100
+#   High    140
+tick-read-chunk-amount: 60
+
+
 
 # -- 繁體中文 --
-# 每個 tick 每一位玩家最多可以發送多少區塊
-# 不要少於 1, 且不要大於 5
-# 如果伺服器有 3 位玩家, 每個 tick 都會隨機抽選 player-tick-send-chunk-amount 次玩家
-# 如果有玩家拿到太多區塊 (大於 player-tick-send-chunk-amount-sole) 的話, 會重新抽選其他玩家
+# 每個 tick 每一位玩家最多可以發送多少區塊  (1 tick = 1 秒)
+# 在伺服器玩家人數少的時候, 才會發會作用
+# 如果伺服器有 3 位玩家, 每個 tick 都會隨機抽選 tick-read-chunk-amount 次玩家
+# 如果有玩家拿到太多區塊 (大於 tick-assign-each-player-max-chunk-amount) 的話, 會重新抽選其他玩家
 # 避免玩家太快拿到大量區塊而卡頓
 # 建議值: player-tick-send-chunk-amount / 平均在線玩家人數
+# 不要少於 1, 且不要大於 40
 # -- English --
-# How many chunks can each player send at each tick
-# No less than 1, and no more than 5
-# If the server has 3 players, each tick will randomly select player-tick-send-chunk-amount players
-# If a player gets too many chunks (greater than player-tick-send-chunk-amount-sole), other players will be drawn again
+# How many chunks can each player send at each tick (1 tick = 1 second)
+# Only when the server has a small number of players
+# If the server has 3 players, each tick will randomly select tick-read-chunk-amount players
+# If a player gets too many chunks (tick-assign-each-player-max-chunk-amount), other players will be drawn again
 # Avoid players getting too fast and getting stuck
 # Recommended value: player-tick-send-chunk-amount / (Average online players)
-player-tick-send-chunk-amount-sole: 5
+# No less than 1, and no more than 80
+tick-assign-each-player-max-chunk-amount: 10
 
 
 
 # -- 繁體中文 --
-# 由於插件發送的區塊晚於伺服器, 所以當 prevent-xray 啟用時, 發送的區塊都將會被處理
-# 直到玩家靠近該區塊, 伺服器才會發送伺服器本身的區塊 (有辦法看見礦物, 或是經過 paper 特殊處理), 此時的區塊才看得件礦物
-# 如果插件發送的區塊把伺服器的覆蓋了, 直到玩家離開區塊很遠 並再度靠近, 否則該區塊的礦物會完全看不見
-# 如果察覺, 此插件提供的區塊, 會覆蓋到伺服器本身的區塊
-# 或是中途缺少幾圈區塊
-# 則調整此值
-# 補正: server.properties -> view-distance + server-field-view-correction
-# -- English --
-# Since the chunk sent by the plugin is later than the server, when prevent-xray is enabled, the send chunk will be processed.
-# Until the player approaches the chunk , the server will not send the chunk of the server itself (can see the ore, or special processing by paperSpigot).
-# If the chunk sent by the plugin covers the server, until the player is far away from the chunk and be close to again, ore the minerals in the chunk will be completely invisible.
-# If you notice that the chunk provided by this plugin will overwrite the chunk of the server itself.
-# Or missing a few lap chunk halfway
-# adjust this value
-# Correction: server.properties -> view-distance + server-field-view-correction
-server-field-view-correction: 0
-
-
-
-# -- 繁體中文 --
-# 每次切換世界 / 長距離傳送, 都要等待一段時間才發送區塊
+# 每次切換世界 / 長距離傳送, 都要等待多少 tick 才發送區塊 (1 tick = 1 秒)
 # 如果設置太少, 會造成客戶端顯示錯誤
-# 建議數值 ((伺服器 view-distance * 伺服器 view-distance) * 2) + 100
+# 建議數值 5 ~ 10
 # -- English --
+# Switch the world / long distance transmission every time, How many ticks have to wait before sending a chunk (1 tick = 1 second)
 # Every time you switch the world / long distance transmission, you have to wait for a period of time before sending the chunk
 # If the setting is too small, it will cause the client to display errors
-# Suggested value: ((Server view-distance * Server view-distance) * 2) + 100
-delayed-send-tick: 100
+# Recommended value 5 ~ 10 (1 tick = 1 second)
+delayed-send-tick: 5
 
 
 
@@ -145,15 +136,36 @@ background-debug-mode: 0
 
 
 
-
 # -- 繁體中文 --
 # 壓力測試模式
 # 不中斷的重複發送全部區塊
+# 不保證區塊發送準確性 (伺服器視野範圍內)
 # 0 關閉
 # 1 啟用
 # -- English --
 # Stress test mode
-# Send all blocks without interruption
+# Send all chunks without interruption
+# Chunk sending accuracy is not guaranteed (within server view distance)
 # 0 close
 # 1 enable
 stress-test-mode: 0
+
+
+
+# -- 繁體中文 --
+# 由於插件發送的區塊晚於伺服器, 所以當 prevent-xray 啟用時, 發送的區塊都將會被處理
+# 直到玩家靠近該區塊, 伺服器才會發送伺服器本身的區塊 (有辦法看見礦物, 或是經過 paper 特殊處理), 此時的區塊才看得件礦物
+# 如果插件發送的區塊把伺服器的覆蓋了, 直到玩家離開區塊很遠 並再度靠近, 否則該區塊的礦物會完全看不見
+# 如果察覺, 此插件提供的區塊, 會覆蓋到伺服器本身的區塊
+# 或是中途缺少幾圈區塊
+# 則調整此值
+# 補正: server.properties -> view-distance + server-field-view-correction
+# -- English --
+# Since the chunk sent by the plugin is later than the server, when prevent-xray is enabled, the send chunk will be processed.
+# Until the player approaches the chunk , the server will not send the chunk of the server itself (can see the ore, or special processing by paperSpigot).
+# If the chunk sent by the plugin covers the server, until the player is far away from the chunk and be close to again, ore the minerals in the chunk will be completely invisible.
+# If you notice that the chunk provided by this plugin will overwrite the chunk of the server itself.
+# Or missing a few lap chunk halfway
+# adjust this value
+# Correction: server.properties -> view-distance + server-field-view-correction
+server-field-view-correction: 0
