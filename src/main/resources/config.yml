@@ -74,7 +74,7 @@ tick-assign-each-player-max-chunk-amount: 10
 # Switch the world / long distance transmission every time, How many ticks have to wait before sending a chunk (1 tick = 1 second)
 # Every time you switch the world / long distance transmission, you have to wait for a period of time before sending the chunk
 # If the setting is too small, it will cause the client to display errors
-# Recommended value 5 ~ 10 (1 tick = 1 second)
+# Recommended value 5 ~ 10
 delayed-send-tick: 5
 
 

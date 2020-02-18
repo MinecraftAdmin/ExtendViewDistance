@@ -293,7 +293,7 @@ public class Loop {
                             }
 
                         } else {
-                            // 測試用
+                            // 壓力測試用
                             if (Value.stressTestMode == 1) {
                                 int x;
                                 int z;
