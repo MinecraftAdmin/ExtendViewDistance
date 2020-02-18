@@ -86,7 +86,7 @@ public class ChunkMapView {
 
 
 
-    public long[] move(Location location) {
+    public synchronized long[] move(Location location) {
         return move(ChunkMapView.blockToChunk(location.getX()), ChunkMapView.blockToChunk(location.getZ()));
     }
     /**
@@ -95,7 +95,7 @@ public class ChunkMapView {
      * @param moveZ 區塊座標Z
      * @return 如果有區塊被移除, 則會集中回傳在這
      */
-    public long[] move(int moveX, int moveZ) {
+    public synchronized long[] move(int moveX, int moveZ) {
 
         /*
         先對 chunkMap 進行座標位移
@@ -251,7 +251,7 @@ public class ChunkMapView {
      * 取得下一個應該要處裡的區塊
      * @return chunkKey, 若沒有需要處裡的區塊, 則回傳 null
      */
-    public Long get() {
+    public synchronized Long get() {
 
         // 區塊位置 (中心點)
         int centerX = this.getCenterX();

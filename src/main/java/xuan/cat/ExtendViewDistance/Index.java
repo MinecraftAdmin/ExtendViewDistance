@@ -12,6 +12,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 public final class Index extends JavaPlugin {
 
@@ -38,6 +40,7 @@ public final class Index extends JavaPlugin {
         Value.worldBlacklist            = configuration.getStringList(  "world-blacklist");
         Value.delayedSendTick           = configuration.getInt(         "delayed-send-tick",                    100);
         Value.backgroundDebugMode       = configuration.getInt(         "background-debug-mode",                0);
+        Value.stressTestMode            = configuration.getInt(         "stress-test-mode",                     0);
 
         ConfigurationSection preventXray = configuration.getConfigurationSection(   "prevent-xray");
         if (preventXray != null) {
@@ -91,6 +94,10 @@ public final class Index extends JavaPlugin {
 # 但如果伺服器主線程tick耗時高過此值
 # 則停止運行擴展視野距離,直到低於此值才繼續運行
 TickIsLag: 50
+
+ChunkIOThread
+ThreadChunkPacket
+newScheduledThreadPool
          */
 
 

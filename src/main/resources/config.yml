@@ -142,3 +142,18 @@ world-blacklist:
 # 1 View
 # 2 Text
 background-debug-mode: 0
+
+
+
+
+# -- 繁體中文 --
+# 壓力測試模式
+# 不中斷的重複發送全部區塊
+# 0 關閉
+# 1 啟用
+# -- English --
+# Stress test mode
+# Send all blocks without interruption
+# 0 close
+# 1 enable
+stress-test-mode: 0

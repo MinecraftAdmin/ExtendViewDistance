@@ -50,6 +50,7 @@ public class Loop implements Runnable {
 
     private static volatile boolean                 isRun                   = false;            // 正在運行中
     private static final    Map<Player, PlayerView> playerPlayerViewHashMap = new HashMap<>();
+    private static final    ChunkManager            chunkManager            = new ChunkManager(30, 1, 1, 1, 1);
 
 
 
@@ -87,6 +88,8 @@ public class Loop implements Runnable {
         if (isRun) return;
         isRun = true;
 
+        long a = System.currentTimeMillis();
+
         try {
             Collection<? extends Player>    onlinePlayers           = Collections.unmodifiableCollection(Bukkit.getOnlinePlayers());
             Map<Player, PlayerView>         playerPlayerViewHashMap = Collections.unmodifiableMap(Loop.playerPlayerViewHashMap);
@@ -110,9 +113,11 @@ public class Loop implements Runnable {
                 boolean     changedViewDistance;
 
                 for (Player player : onlinePlayers) {
+
                     playerView = playerPlayerViewHashMap.get(player);
+
                     if (playerView == null) {
-                        playerView = new PlayerView();
+                        playerView              = new PlayerView();
                         Loop.playerPlayerViewHashMap.put(player, playerView);
 
                         playerView.player       = player;
@@ -127,12 +132,15 @@ public class Loop implements Runnable {
                             playerView.chunkMapView.extendViewDistance = playerMaxViewDistance;
                             Packet.callServerViewDistancePacket(playerView.player, playerMaxViewDistance);
                         }
+
                         playerView.chunkMapView.serverViewDistance = serverViewDistance;
                         playerView.chunkMapView.move(player.getLocation());
                     }
                 }
             }
 
+
+            long b = System.currentTimeMillis();
 
 
             // 當玩家確定沒問題後, 就可以放入此陣列中
@@ -147,6 +155,7 @@ public class Loop implements Runnable {
                 long[]      removeChunkKeyList;
                 boolean     changedViewDistance;
                 for (Object o : playerViewArray) {
+
                     playerView = (PlayerView) o;
 
                     if (!NMS.Player(playerView.player).getConnection().isConnected()) {
@@ -192,10 +201,8 @@ public class Loop implements Runnable {
                     // 沒問題, 進行移動
                     removeChunkKeyList = playerView.chunkMapView.move(playerView.player.getLocation());
                     // 已經超出視野距離的區塊
-                    for (long chunkKey : removeChunkKeyList) {
-                        //System.out.println( ChunkMapView.getX(chunkKey) + " / " + ChunkMapView.getZ(chunkKey));
+                    for (long chunkKey : removeChunkKeyList)
                         Packet.callServerUnloadChunkPacket(playerView.player, ChunkMapView.getX(chunkKey), ChunkMapView.getZ(chunkKey));
-                    }
                     playerView.totalSend                = 0;
                     playerViews[ playerViewsRead++ ]    = playerView;
                 }
@@ -211,15 +218,19 @@ public class Loop implements Runnable {
 
  */
 
+/*
+            long c = System.currentTimeMillis();
+
 
 
             // 當確定取得後放入此陣列中
-            PlayerView[]        waitingSendPlayerView   = new PlayerView        [ Value.tickSendChunkAmount ];
-            Player[]            waitingSendPlayer       = new Player            [ Value.tickSendChunkAmount ];
-            World[]             waitingSendWorld        = new World             [ Value.tickSendChunkAmount ];
-            ExtendChunkCache[]  waitingSendChunkCache   = new ExtendChunkCache  [ Value.tickSendChunkAmount ];
+            PlayerView[]        waitingSendPlayerView   = new PlayerView[ Value.tickSendChunkAmount ];
+            Player[]            waitingSendPlayer       = new Player    [ Value.tickSendChunkAmount ];
+            Chunk[]             waitingSendChunk        = new Chunk     [ Value.tickSendChunkAmount ];
             int                 waitingSendRead         = 0;
 
+
+ */
 
 
             // 確保循環在限制範圍內
@@ -228,28 +239,52 @@ public class Loop implements Runnable {
                     PlayerView          playerView;
                     Long                chunkKey;
                     ExtendChunkCache    chunkCache;
+                    Chunk               chunk;
                     for (int i = 0, isSend = 0; i < Value.tickSendChunkAmount && isSend < Value.tickSendChunkAmount; ++i) {
                         playerView = playerViews[(int) (Math.random() * playerViewsRead)];
 
                         // 檢查是否符合條件
-                        if (Value.worldBlacklist.contains(playerView.world.getName()))  continue; // 在黑名單內
-                        if (playerView.totalSend >= Value.tickSendChunkAmountSole)      continue; // 超過單個 tick 能發送的最大量
+                        if (Value.worldBlacklist.contains(playerView.world.getName()))  continue;   // 在黑名單內
+                        if (playerView.totalSend >= Value.tickSendChunkAmountSole)      continue;   // 超過單個 tick 能發送的最大量
+                        if (playerView.delayedSendTick > 0)                             continue;   // 需要等待
 
                         chunkKey = playerView.chunkMapView.get();
                         if (chunkKey != null) {
                             try {
 
-                                chunkCache = NMS.World(playerView.world).getChunkCache(ChunkMapView.getX(chunkKey), ChunkMapView.getZ(chunkKey));
-                                if (chunkCache != null) {
-                                    waitingSendPlayerView   [ waitingSendRead ] = playerView;
-                                    waitingSendPlayer       [ waitingSendRead ] = playerView.player;
-                                    waitingSendWorld        [ waitingSendRead ] = playerView.world;
-                                    waitingSendChunkCache   [ waitingSendRead ] = chunkCache;
-                                    waitingSendRead++;
+                                if (chunkManager.enoughChunkIO()) {
+                                    ChunkManager.Waiting waiting = new ChunkManager.Waiting();
+                                    waiting.player  = playerView.player;
+                                    waiting.world   = playerView.world;
+                                    waiting.x       = ChunkMapView.getX(chunkKey);
+                                    waiting.z       = ChunkMapView.getZ(chunkKey);
 
-                                    //System.out.println( ChunkMapView.getX(chunkKey) + " / " + ChunkMapView.getZ(chunkKey));
+                                    if (!chunkManager.addChunkIO(waiting)) {
+                                        playerView.chunkMapView.markWait(chunkKey);
+                                        isRun = false;
+                                        return;
+                                    }
                                 }
 
+                                //chunk = chunkCache.asChunk(playerView.world);
+/*
+                                chunkCache = NMS.World(playerView.world).getChunkCache(ChunkMapView.getX(chunkKey), ChunkMapView.getZ(chunkKey));
+                                if (chunkCache != null) {
+
+                                    // 防透視礦物作弊
+                                    // 替換全部指定材質
+                                    for (Map.Entry<BlockData, BlockData[]> entry : Value.conversionMaterialListMap.entrySet()) {
+                                        chunkCache.replaceAllMaterial(entry.getValue(), entry.getKey());
+                                    }
+
+                                    waitingSendPlayerView   [ waitingSendRead ] = playerView;
+                                    waitingSendPlayer       [ waitingSendRead ] = playerView.player;
+                                    waitingSendChunk        [ waitingSendRead ] = chunk;
+                                    waitingSendRead++;
+                                }
+
+
+ */
                                 playerView.totalSend++;
                                 isSend++;
 
@@ -258,22 +293,46 @@ public class Loop implements Runnable {
                                     ex.printStackTrace();
                                 playerView.chunkMapView.markWait(chunkKey);
                             }
+
                         } else {
                             // 測試用
-                            for (long isSendChunk : playerView.chunkMapView.getIsSendChunkList()) {
-                                Packet.callServerUnloadChunkPacket(playerView.player, ChunkMapView.getX(isSendChunk), ChunkMapView.getZ(isSendChunk));
+                            if (Value.stressTestMode == 1) {
+                                int x;
+                                int z;
+                                int minX;
+                                int minZ;
+                                int maxX;
+                                int maxZ;
+                                for (long isSendChunk : playerView.chunkMapView.getIsSendChunkList()) {
+                                    // 是否已經不再範圍內
+                                    x = ChunkMapView.getX(isSendChunk);
+                                    z = ChunkMapView.getZ(isSendChunk);
+                                    minX = x - serverViewDistance;
+                                    minZ = z - serverViewDistance;
+                                    maxX = x + serverViewDistance;
+                                    maxZ = z + serverViewDistance;
+                                    if (x < minX || x > maxX || z < minZ || z > maxZ)
+                                        continue;
+                                    Packet.callServerUnloadChunkPacket(playerView.player, x, z);
+                                }
+                                playerView.chunkMapView.clear();
+                                playerView.chunkMapView.setCenter(playerView.player.getLocation());
+                                playerView.delayedSendTick = 1;
                             }
-                            playerView.chunkMapView.clear();
                         }
                     }
                 }
             }
 
 
+            isRun = false;
+/*
 
-            // 剩下的處裡不強制同步
-            isRun       = false;
-            playerViews = null;
+            long d = System.currentTimeMillis();
+
+
+
+            isRun = false;
 
 
 
@@ -286,47 +345,40 @@ public class Loop implements Runnable {
                 // 緩衝
                 PlayerView          playerView;
                 Player              player;
-                World               world;
-                ExtendChunkCache    chunkCache;
                 Chunk               chunk;
                 for (int i = 0 ; i < waitingSendRead ; ++i) {
                     playerView  = waitingSendPlayerView [ i ];
                     player      = waitingSendPlayer     [ i ];
-                    world       = waitingSendWorld      [ i ];
-                    chunkCache  = waitingSendChunkCache [ i ];
+                    chunk       = waitingSendChunk      [ i ];
 
-
-                    if (playerView == null || playerView.waitingChangeWorld || world == null || chunkCache == null) continue;
-
-                    // 防透視礦物作弊
-                    // 替換全部指定材質
-                    for (Map.Entry<BlockData, BlockData[]> entry : Value.conversionMaterialListMap.entrySet()) {
-                        chunkCache.replaceAllMaterial(entry.getValue(), entry.getKey());
-                    }
-
-                    chunk = chunkCache.asChunk(world);
+                    if (playerView == null || playerView.waitingChangeWorld || chunk == null || playerView.delayedSendTick > 0) continue;
 
                     Packet.callServerMapChunkPacket(player, chunk, true);
-                    Packet.callServerLightUpdatePacket(player, chunk);
-                    chunk = null;
-
+                    //Packet.callServerLightUpdatePacket(player, chunk);
 
                     // 除錯用
                     if (isSendDebugList != null)
                         isSendDebugList.put(player, playerView);
                 }
                 // 釋放
-                waitingSendPlayerView   = null;
-                waitingSendPlayer       = null;
-                waitingSendWorld        = null;
-                waitingSendChunkCache   = null;
+                //waitingSendPlayerView   = null;
+                //waitingSendPlayer       = null;
+                //waitingSendWorld        = null;
+                //waitingSendChunkCache   = null;
             }
 
 
 
+            long e = System.currentTimeMillis();
+
+
+
+ */
 
             // 除錯用
-            if (isSendDebugList != null) {
+            //if (isSendDebugList != null) {
+                //System.out.println("a-b:" + (b - a) + " b-c:" + (c - b) + " c-d:" + (d - c) + " d-e:" + (e - d));
+                /*
                 Player      player;
                 String      playerName;
                 PlayerView  playerView;
@@ -355,11 +407,13 @@ public class Loop implements Runnable {
                         long[]  send    = playerView.chunkMapView.getIsSendChunkList();
                         int     wait    = (all - send.length);
 
-                        System.out.println("player:" + playerName + " all:" + all + " wait:" + (wait < 0 ? 0 : wait) + " send:" + send.length);
+                        //System.out.println("player:" + playerName + " all:" + all + " wait:" + (wait < 0 ? 0 : wait) + " send:" + send.length);
                     }
 
                 }
-            }
+
+                 */
+            //}
 
 
 

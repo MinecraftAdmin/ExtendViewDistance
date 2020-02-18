@@ -14,6 +14,7 @@ public class Value {
     public static int                           serverFieldViewCorrection;
     public static int                           delayedSendTick;
     public static int                           backgroundDebugMode;
+    public static int                           stressTestMode;
     public static Map<BlockData, BlockData[]>   conversionMaterialListMap   = new HashMap<>();
     public static List<String>                  worldBlacklist              = new ArrayList<>();
     //public static boolean   sendChunkAsync;
