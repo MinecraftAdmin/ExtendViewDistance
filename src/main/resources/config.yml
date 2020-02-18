@@ -61,7 +61,7 @@ tick-read-chunk-amount: 60
 # If a player gets too many chunks (tick-assign-each-player-max-chunk-amount), other players will be drawn again
 # Avoid players getting too fast and getting stuck
 # Recommended value: player-tick-send-chunk-amount / (Average online players)
-# No less than 1, and no more than 80
+# No less than 1, and no more than 40
 tick-assign-each-player-max-chunk-amount: 10
 
 
