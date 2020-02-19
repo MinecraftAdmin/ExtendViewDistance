@@ -24,10 +24,10 @@ extend-view-distance: 32
 #   在一個已經有存在大量區塊的地圖中, 全部線上玩家拿取鞘翅, 朝向不同的方向滑翔
 #   如果持續至少 10 分鐘沒有導致 tps 下降, 則代表此值可以套用
 # 伺服器性能建議值:
-#   不佳 20
-#   一般 40
-#   稍好 70
-#   高效 110
+#   不佳 10
+#   一般 20
+#   稍好 30
+#   高效 40
 # -- English --
 # How many chunks can each tick send to players (1 tick = 50 ms)
 # When it is too low, the chunk will be slow to fill the player
@@ -38,10 +38,10 @@ extend-view-distance: 32
 #   In a map that already has a large number of chunks, all online players ues the elytra and glide in different directions
 #   If there is no decrease in tps for at least 10 minutes, this value can be applied
 # Recommended server performance:
-#   Poor    20
-#   General 60
-#   Better  100
-#   High    140
+#   Poor    10
+#   General 20
+#   Better  30
+#   High    40
 tick-read-chunk-amount: 20
 
 
@@ -53,7 +53,7 @@ tick-read-chunk-amount: 20
 # 如果有玩家拿到太多區塊 (大於 tick-assign-each-player-max-chunk-amount) 的話, 會重新抽選其他玩家
 # 避免玩家太快拿到大量區塊而卡頓
 # 建議值: tick-read-chunk-amount / 平均在線玩家人數
-# 不要少於 1, 且不要大於 40
+# 不要少於 1, 且不要大於 5
 # -- English --
 # How many chunks can each player send at each tick (1 tick = 50 ms)
 # Only when the server has a small number of players
@@ -61,7 +61,7 @@ tick-read-chunk-amount: 20
 # If a player gets too many chunks (tick-assign-each-player-max-chunk-amount), other players will be drawn again
 # Avoid players getting too fast and getting stuck
 # Recommended value: tick-read-chunk-amount / Average online players
-# No less than 1, and no more than 40
+# No less than 1, and no more than 5
 tick-assign-each-player-max-chunk-amount: 5
 
 
@@ -69,12 +69,12 @@ tick-assign-each-player-max-chunk-amount: 5
 # -- 繁體中文 --
 # 每次切換世界 / 長距離傳送, 都要等待多少 tick 才發送區塊 (1 tick = 50 毫秒)
 # 如果設置太少, 會造成客戶端顯示錯誤
-# 建議數值 5 ~ 10
+# 建議數值 50 ~ 500
 # -- English --
 # Switch the world / long distance transmission every time, How many ticks have to wait before sending a chunk (1 tick = 50 ms)
 # Every time you switch the world / long distance transmission, you have to wait for a period of time before sending the chunk
 # If the setting is too small, it will cause the client to display errors
-# Recommended value 5 ~ 10
+# Recommended value 50 ~ 500
 delayed-send-tick: 100
 
 
