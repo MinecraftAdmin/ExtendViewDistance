@@ -122,10 +122,12 @@ public class Event implements Listener {
 
  */
 
-
+/*
     @EventHandler(priority = EventPriority.NORMAL)
     public void event(ServerTickEndEvent event) {
         System.out.println(event.getTickDuration());
 
     }
+
+ */
 }
