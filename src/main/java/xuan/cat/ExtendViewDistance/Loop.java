@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import xuan.cat.XuanCatAPI.NMS;
 import xuan.cat.XuanCatAPI.Packet;
 import xuan.cat.XuanCatAPI.api.event.packet.PacketDelayedTrigger;
+import xuan.cat.XuanCatAPI.api.nms.world.ExtendChunk;
 import xuan.cat.XuanCatAPI.api.nms.world.ExtendChunkCache;
 
 import java.util.*;
@@ -92,7 +93,7 @@ public class Loop {
 
 
     public void runView() {
-        //long a = System.currentTimeMillis();
+        long a = System.currentTimeMillis();
 
         try {
             Collection<? extends Player>    onlinePlayers           = Collections.unmodifiableCollection(Bukkit.getOnlinePlayers());
@@ -144,7 +145,7 @@ public class Loop {
             }
 
 
-            //long b = System.currentTimeMillis();
+            long b = System.currentTimeMillis();
 
 
             // 當玩家確定沒問題後, 就可以放入此陣列中
@@ -223,7 +224,7 @@ public class Loop {
  */
 
 
-            //long c = System.currentTimeMillis();
+            long c = System.currentTimeMillis();
 
 
 /*
@@ -277,6 +278,7 @@ public class Loop {
                                     Chunk chunk = chunkCache.asChunk(playerView.world);
 
                                     Packet.callServerMapChunkPacket(playerView.player, chunk, true);
+                                    Packet.callServerLightUpdatePacket(playerView.player, chunk);
 
                                     // 除錯用
                                     if (isSendDebugList != null)
@@ -324,24 +326,17 @@ public class Loop {
 
 
 
-            //long d = System.currentTimeMillis();
+            long d = System.currentTimeMillis();
             //isRun = false;
 
 
 
 
-
-
-
-            //long e = System.currentTimeMillis();
-
-
-
-
-
-            // 除錯用
-            if (isSendDebugList != null) {
-                //System.out.println("a-b:" + (b - a) + " b-c:" + (c - b) + " c-d:" + (d - c) + " d-e:" + (e - d));
+            if (Value.backgroundDebugMode == 3) {
+                // 除錯用
+                System.out.println("a-b:" + (b - a) + " b-c:" + (c - b) + " c-d:" + (d - c));
+            } else if (isSendDebugList != null) {
+                // 除錯用
                 Player      player;
                 String      playerName;
                 PlayerView  playerView;

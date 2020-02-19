@@ -1,5 +1,6 @@
 package xuan.cat.ExtendViewDistance;
 
+import com.destroystokyo.paper.event.server.ServerTickEndEvent;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -122,4 +123,9 @@ public class Event implements Listener {
  */
 
 
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void event(ServerTickEndEvent event) {
+        System.out.println(event.getTickDuration());
+
+    }
 }

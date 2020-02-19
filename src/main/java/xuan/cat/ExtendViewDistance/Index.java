@@ -11,8 +11,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public final class Index extends JavaPlugin {
 
@@ -116,14 +114,14 @@ newScheduledThreadPool
                     loop.runView();
 
                     long timeEnd = System.currentTimeMillis();
-                    long sleep = 1000 - (timeEnd - timeStart);
+                    long sleep = 50 - (timeEnd - timeStart);
                     if (sleep > 0) {
-                        Thread.sleep(sleep);   // 每 25 毫秒運行一次
+                        Thread.sleep(sleep);   // 每 50 毫秒運行一次
                     }
                 }
 
             } catch (Exception ex) {
-                ex.printStackTrace();
+                //ex.printStackTrace();
             }
         });
         run.setPriority(Thread.MIN_PRIORITY);
