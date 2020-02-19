@@ -264,7 +264,7 @@ public class Loop {
                                 int x = ChunkMapView.getX(chunkKey);
                                 int z = ChunkMapView.getZ(chunkKey);
 
-                                ExtendChunkCache chunkCache = NMS.World(playerView.world).getChunkIfRegionFile(x, z);
+                                ExtendChunkCache chunkCache = NMS.World(playerView.world).getChunkIfRegionFile(x, z, true, true, false, false, true, false, false, false, true, false);
 
                                 if (chunkCache != null) {
                                     // 有區塊
