@@ -33,7 +33,7 @@ public final class Index extends JavaPlugin {
         Value.extendViewDistance                    = configuration.getInt(         "extend-view-distance",                         32);
         if (Value.extendViewDistance > 32) Value.extendViewDistance = 32;
 
-        Value.tickReadChunkAmount                   = configuration.getInt(         "tick-read-chunk-amount",                       30);
+        Value.tickReadChunkAmount                   = configuration.getInt(         "tick-read-chunk-amount",                       20);
         Value.tickAssignEachPlayerMaxChunkAmount    = configuration.getInt(         "tick-assign-each-player-max-chunk-amount",     5);
         Value.serverFieldViewCorrection             = configuration.getInt(         "server-field-view-correction",                 0);
         Value.worldBlacklist                        = configuration.getStringList(  "world-blacklist");
