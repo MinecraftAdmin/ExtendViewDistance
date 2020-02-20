@@ -313,7 +313,7 @@ public class Loop {
                                 isSend++;
 
                             } catch (Exception ex) {
-                                if (Value.backgroundDebugMode == 1 || Value.backgroundDebugMode == 2)
+                                if (Value.backgroundDebugMode == 1 || Value.backgroundDebugMode == 2 || Value.backgroundDebugMode == 3)
                                     ex.printStackTrace();
                                 playerView.chunkMapView.markWait(chunkKey);
                             }
