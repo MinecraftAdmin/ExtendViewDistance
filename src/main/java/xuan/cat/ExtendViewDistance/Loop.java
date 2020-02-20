@@ -262,8 +262,9 @@ public class Loop {
                         if (chunkKey != null) {
                             try {
 
-                                int x = ChunkMapView.getX(chunkKey);
-                                int z = ChunkMapView.getZ(chunkKey);
+                                int     x       = ChunkMapView.getX(chunkKey);
+                                int     z       = ChunkMapView.getZ(chunkKey);
+                                Chunk   chunk;
 
                                 /*
                                 由於區塊記憶體消耗很兇
@@ -285,7 +286,7 @@ public class Loop {
                                         }
 
                                         // 轉換為區塊
-                                        Chunk chunk = chunkCache.asChunk(playerView.world);
+                                        chunk = chunkCache.asChunk(playerView.world);
 
                                         Packet.callServerMapChunkPacket(playerView.player, chunk, true);
                                         Packet.callServerLightUpdatePacket(playerView.player, chunk);
@@ -296,7 +297,7 @@ public class Loop {
                                     }
                                 } else {
                                     // 一般模式
-                                    Chunk chunk = NMS.World(playerView.world).getChunk(ExtendChunk.Status.LIGHT, x, z ,true);
+                                    chunk = NMS.World(playerView.world).getChunk(ExtendChunk.Status.LIGHT, x, z ,true);
 
                                     if (chunk != null) {
                                         Packet.callServerMapChunkPacket(playerView.player, chunk, true);
@@ -404,8 +405,8 @@ public class Loop {
 
 
 
-    public void runChunk() {
         /*
+    public void runChunk() {
         ChunkSend chunkSend;
 
         for (int i = 0 ; i < Value.tickSendChunkAmount ; ++i) {
@@ -423,9 +424,9 @@ public class Loop {
             }
         }
 
-         */
     }
 
+         */
 
 
 
