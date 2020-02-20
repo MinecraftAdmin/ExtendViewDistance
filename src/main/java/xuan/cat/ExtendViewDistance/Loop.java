@@ -271,7 +271,7 @@ public class Loop {
                                 讓記憶體能在新生代快速的被清除
                                  */
 
-                                ExtendChunkCache chunkCache = NMS.World(playerView.world).getChunkIfRegionFile(x, z, true, true, false, false, true, false, false, false, true, false);
+                                ExtendChunkCache chunkCache = NMS.World(playerView.world).getChunkIfRegionFile(x, z, true, true, false, false, true, true, false, false, true, false);
 
                                 if (chunkCache != null) {
                                     // 有區塊
