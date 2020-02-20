@@ -510,6 +510,7 @@ public class Loop {
         }
     }
 
+
     public static void needDelayedSendTick(Player player, Location from, Location move) {
         // 傳送距離過遠, 則等待一段時間
 
