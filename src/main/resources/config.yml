@@ -67,11 +67,11 @@ tick-assign-each-player-max-chunk-amount: 5
 
 
 # -- 繁體中文 --
-# 每次切換世界 / 長距離傳送, 都要等待多少 tick 才發送區塊 (1 tick = 50 毫秒)
+# 每次切換世界 / 長距離傳送 / 死亡重生, 都要等待多少 tick 才發送區塊 (1 tick = 50 毫秒)
 # 如果設置太少, 會造成客戶端顯示錯誤
 # 建議數值 50 ~ 500
 # -- English --
-# Switch the world / long distance transmission every time, How many ticks have to wait before sending a chunk (1 tick = 50 ms)
+# Switch the world / long distance transmission / rebirth of death every time, How many ticks have to wait before sending a chunk (1 tick = 50 ms)
 # Every time you switch the world / long distance transmission, you have to wait for a period of time before sending the chunk
 # If the setting is too small, it will cause the client to display errors
 # Recommended value 50 ~ 500

@@ -7,8 +7,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.world.WorldInitEvent;
+import org.spigotmc.event.player.PlayerSpawnLocationEvent;
 import xuan.cat.XuanCatAPI.api.event.packet.*;
 
 public class Event implements Listener {
@@ -81,6 +83,12 @@ public class Event implements Listener {
         Loop.needDelayedSendTick(player, from, to);
     }
 
+    @EventHandler
+    public void event(PlayerRespawnEvent event) {
+        Player      player  = event.getPlayer();
+
+        Loop.playerRespawnEvent(player);
+    }
 
 
     /**

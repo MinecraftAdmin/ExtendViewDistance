@@ -67,13 +67,14 @@ public class Loop {
     public static class PlayerView {
         public          Player                      player;
         public          ChunkMapView                chunkMapView;
-        public          World                       world;
+        public          World                       world                   = null;
         public final    List<PacketDelayedTrigger>  packetTriggerListMap    = new ArrayList<>();
         public volatile boolean                     waitingChangeWorld      = false;
         public          int                         delayedSendTick         = Value.delayedSendTick;
         public          int                         totalRead               = 0;                        // 單個 tick 累計發送
 
         public boolean isChangeWorld(World moveWorld) {
+            if (this.world == null || moveWorld == null) return this.waitingChangeWorld;
             this.waitingChangeWorld = !this.world.equals(moveWorld);
             return this.waitingChangeWorld;
         }
@@ -271,7 +272,7 @@ public class Loop {
                                 讓記憶體能在新生代快速的被清除
                                  */
 
-                                ExtendChunkCache chunkCache = NMS.World(playerView.world).getChunkIfRegionFile(x, z, true, true, false, false, true, true, false, false, true, false);
+                                ExtendChunkCache chunkCache = NMS.World(playerView.world).getChunkIfRegionFile(x, z, true, true, false, false, true, false, false, false, true, true);
 
                                 if (chunkCache != null) {
                                     // 有區塊
@@ -496,6 +497,18 @@ public class Loop {
         return false;
     }
 
+
+    public static void playerRespawnEvent(Player player) {
+        PlayerView  playerView              = playerPlayerViewHashMap.get(player);
+        if (playerView != null) {
+            playerView.delayedSendTick      = Value.delayedSendTick;
+            playerView.waitingChangeWorld   = true;
+            for (long isSendChunk : playerView.chunkMapView.getIsSendChunkList()) {
+                Packet.callServerUnloadChunkPacket(playerView.player, ChunkMapView.getX(isSendChunk), ChunkMapView.getZ(isSendChunk));
+            }
+            playerView.chunkMapView.clear();
+        }
+    }
 
     public static void needDelayedSendTick(Player player, Location from, Location move) {
         // 傳送距離過遠, 則等待一段時間
