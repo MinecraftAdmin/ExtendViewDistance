@@ -42,10 +42,10 @@ fast-mode: true
 #     稍好 30
 #     高效 40
 #   fast-mode: false
-#     不佳 2
-#     一般 5
-#     稍好 7
-#     高效 10
+#     不佳 1
+#     一般 2
+#     稍好 4
+#     高效 6
 # -- English --
 # How many chunks can each tick send to players (1 tick = 50 ms)
 # When it is too low, the chunk will be slow to fill the player
@@ -62,10 +62,10 @@ fast-mode: true
 #     Better  30
 #     High    40
 #   fast-mode: false
-#     Poor    2
-#     General 5
-#     Better  7
-#     High    10
+#     Poor    1
+#     General 2
+#     Better  4
+#     High    6
 tick-read-chunk-amount: 10
 
 
