@@ -15,6 +15,18 @@ extend-view-distance: 32
 
 
 # -- 繁體中文 --
+# 急速模式
+#   true:   不會計算區塊光線照明, 可能會造成區塊陰影, 但是性能很快
+#   false:  prevent-xray 將不起作用
+# -- English --
+# Quick mode
+#   true:   Will not count chunk lighting, May cause chunk shadows, but performance is fast
+#   false:  prevent-xray will not work
+fast-mode: true
+
+
+
+# -- 繁體中文 --
 # 每個 tick 能發送給全部玩家多少個區塊 (1 tick = 50 毫秒)
 # 過低時區塊則會很慢才給滿玩家
 # 數值取決於網路速度和CPU性能來做調整
@@ -24,10 +36,16 @@ extend-view-distance: 32
 #   在一個已經有存在大量區塊的地圖中, 全部線上玩家拿取鞘翅, 朝向不同的方向滑翔
 #   如果持續至少 10 分鐘沒有導致 tps 下降, 則代表此值可以套用
 # 伺服器性能建議值:
-#   不佳 10
-#   一般 20
-#   稍好 30
-#   高效 40
+#   fast-mode: true
+#     不佳 10
+#     一般 20
+#     稍好 30
+#     高效 40
+#   fast-mode: false
+#     不佳 2
+#     一般 5
+#     稍好 7
+#     高效 10
 # -- English --
 # How many chunks can each tick send to players (1 tick = 50 ms)
 # When it is too low, the chunk will be slow to fill the player
@@ -38,10 +56,16 @@ extend-view-distance: 32
 #   In a map that already has a large number of chunks, all online players ues the elytra and glide in different directions
 #   If there is no decrease in tps for at least 10 minutes, this value can be applied
 # Recommended server performance:
-#   Poor    10
-#   General 20
-#   Better  30
-#   High    40
+#   fast-mode: true
+#     Poor    10
+#     General 20
+#     Better  30
+#     High    40
+#   fast-mode: false
+#     Poor    2
+#     General 5
+#     Better  7
+#     High    10
 tick-read-chunk-amount: 20
 
 

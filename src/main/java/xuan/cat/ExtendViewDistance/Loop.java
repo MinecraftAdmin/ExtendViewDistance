@@ -272,25 +272,40 @@ public class Loop {
                                 讓記憶體能在新生代快速的被清除
                                  */
 
-                                ExtendChunkCache chunkCache = NMS.World(playerView.world).getChunkIfRegionFile(x, z, true, true, true, false, true, false, false, false, true, false);
+                                if (Value.fastMode) {
+                                    // 急速模式
+                                    ExtendChunkCache chunkCache = NMS.World(playerView.world).getChunkIfRegionFile(x, z, true, true, false, false, true, false, false, false, true, false);
 
-                                if (chunkCache != null) {
-                                    // 有區塊
-                                    // 防透視礦物作弊
-                                    // 替換全部指定材質
-                                    for (Map.Entry<BlockData, BlockData[]> entry : Value.conversionMaterialListMap.entrySet()) {
-                                        chunkCache.replaceAllMaterial(entry.getValue(), entry.getKey());
+                                    if (chunkCache != null) {
+                                        // 有區塊
+                                        // 防透視礦物作弊
+                                        // 替換全部指定材質
+                                        for (Map.Entry<BlockData, BlockData[]> entry : Value.conversionMaterialListMap.entrySet()) {
+                                            chunkCache.replaceAllMaterial(entry.getValue(), entry.getKey());
+                                        }
+
+                                        // 轉換為區塊
+                                        Chunk chunk = chunkCache.asChunk(playerView.world);
+
+                                        Packet.callServerMapChunkPacket(playerView.player, chunk, true);
+                                        Packet.callServerLightUpdatePacket(playerView.player, chunk);
+
+                                        // 除錯用
+                                        if (isSendDebugList != null)
+                                            isSendDebugList.put(playerView.player, playerView);
                                     }
+                                } else {
+                                    // 一般模式
+                                    Chunk chunk = NMS.World(playerView.world).getChunk(ExtendChunk.Status.LIGHT, x, z ,true);
 
-                                    // 轉換為區塊
-                                    Chunk chunk = chunkCache.asChunk(playerView.world);
+                                    if (chunk != null) {
+                                        Packet.callServerMapChunkPacket(playerView.player, chunk, true);
+                                        Packet.callServerLightUpdatePacket(playerView.player, chunk);
 
-                                    Packet.callServerMapChunkPacket(playerView.player, chunk, true);
-                                    Packet.callServerLightUpdatePacket(playerView.player, chunk);
-
-                                    // 除錯用
-                                    if (isSendDebugList != null)
-                                        isSendDebugList.put(playerView.player, playerView);
+                                        // 除錯用
+                                        if (isSendDebugList != null)
+                                            isSendDebugList.put(playerView.player, playerView);
+                                    }
                                 }
 
                                 playerView.totalRead++;
