@@ -123,6 +123,16 @@ world-blacklist:
 
 
 # -- 繁體中文 --
+# 是否要計算權限
+# 尋找玩家是否有 extend_view_distance.<Max view distance> 權限
+# -- English --
+# Whether to calculate permissions
+# Find if the player has extend_view_distance.<Max view distance> permission
+computing-permissions: true
+
+
+
+# -- 繁體中文 --
 # 後臺調適模式
 # 0 關閉
 # 1 視圖

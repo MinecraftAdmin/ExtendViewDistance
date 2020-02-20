@@ -461,10 +461,12 @@ public class Loop {
 
 
         // 檢查權限節點
-        for (int i = extendViewDistance ; i > 0 ; i--) {
-            if (viewDistance > i && player.hasPermission("extend_view_distance." + i)) {
-                viewDistance = i;
-                break;
+        if (Value.computingPermissions) {
+            for (int i = extendViewDistance; i > 0; i--) {
+                if (viewDistance > i && player.hasPermission("extend_view_distance." + i)) {
+                    viewDistance = i;
+                    break;
+                }
             }
         }
 

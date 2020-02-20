@@ -38,6 +38,7 @@ public final class Index extends JavaPlugin {
         Value.serverFieldViewCorrection             = configuration.getInt(         "server-field-view-correction",                 0);
         Value.worldBlacklist                        = configuration.getStringList(  "world-blacklist");
         Value.delayedSendTick                       = configuration.getInt(         "delayed-send-tick",                            100);
+        Value.computingPermissions                  = configuration.getBoolean(     "computing-permissions",                        true);
         Value.backgroundDebugMode                   = configuration.getInt(         "background-debug-mode",                        0);
         Value.stressTestMode                        = configuration.getInt(         "stress-test-mode",                             0);
 
