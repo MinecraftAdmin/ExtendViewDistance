@@ -312,6 +312,8 @@ public class Loop {
                                 playerView.totalRead++;
                                 isSend++;
 
+                            } catch (ConcurrentModificationException concurrentModificationException) {
+                                playerView.chunkMapView.markWait(chunkKey);
                             } catch (Exception ex) {
                                 if (Value.backgroundDebugMode == 1 || Value.backgroundDebugMode == 2 || Value.backgroundDebugMode == 3)
                                     ex.printStackTrace();

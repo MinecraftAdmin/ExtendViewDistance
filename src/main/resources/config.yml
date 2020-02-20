@@ -66,7 +66,7 @@ fast-mode: true
 #     General 5
 #     Better  7
 #     High    10
-tick-read-chunk-amount: 20
+tick-read-chunk-amount: 10
 
 
 
