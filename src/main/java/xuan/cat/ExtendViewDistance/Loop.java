@@ -79,13 +79,6 @@ public class Loop {
             return this.waitingChangeWorld;
         }
     }
-    /**
-     * 表示區塊顯示
-     */
-    public static class ChunkSend {
-        public volatile PlayerView   playerView;
-        public volatile Chunk        chunk;
-    }
 
 
 
