@@ -117,7 +117,7 @@ public class ChunkMapView {
 
 
 
-        // 將那些已經不再範圍內的區塊, 增加到緩存忠
+        // 將那些已經不再範圍內的區塊, 增加到緩存中
         int effectiveMinX = moveX - extendViewDistance;
         int effectiveMinZ = moveZ - extendViewDistance;
         int effectiveMaxX = moveX + extendViewDistance;
