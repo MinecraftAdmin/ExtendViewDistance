@@ -1,1 +1,1 @@
-https://www.spigotmc.org/resources/extendviewdistance.71025/
+https://www.mc-market.org/resources/13692/
