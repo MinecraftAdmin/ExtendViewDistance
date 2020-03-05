@@ -160,11 +160,13 @@ computing-permissions: true
 # 0 關閉
 # 1 視圖
 # 2 文字
+# 3 耗費時間
 # -- English --
 # Background debug mode
 # 0 Close
 # 1 View
 # 2 Text
+# 3 Time consuming
 background-debug-mode: 0
 
 
