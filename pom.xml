@@ -6,7 +6,7 @@
 
     <groupId>ExtendViewDistance</groupId>
     <artifactId>ExtendViewDistance</artifactId>
-    <version>8.1.3</version>
+    <version>8.1.4</version>
     <packaging>jar</packaging>
 
     <name>ExtendViewDistance</name>

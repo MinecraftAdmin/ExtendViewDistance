@@ -353,7 +353,11 @@ public class Loop {
 
             if (Value.backgroundDebugMode == 3) {
                 // 除錯用
-                System.out.println("a-b:" + (b - a) + " b-c:" + (c - b) + " c-d:" + (d - c));
+                if (d - a < 50) {
+                    System.out.println("a-b:" + (b - a) + " b-c:" + (c - b) + " c-d:" + (d - c));
+                } else {
+                    System.out.println(ChatColor.RED + "a-b:" + (b - a) + " b-c:" + (c - b) + " c-d:" + (d - c));
+                }
             } else if (isSendDebugList != null) {
                 // 除錯用
                 Player      player;
