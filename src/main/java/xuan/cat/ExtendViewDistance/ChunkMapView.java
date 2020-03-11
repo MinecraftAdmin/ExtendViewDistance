@@ -117,11 +117,20 @@ public class ChunkMapView {
 
 
 
+        //int extendViewDistance = this.extendViewDistance < this.serverViewDistance ? this.serverViewDistance : this.extendViewDistance;
+
+
+
+
         // 將那些已經不再範圍內的區塊, 增加到緩存中
-        int effectiveMinX = moveX - extendViewDistance;
-        int effectiveMinZ = moveZ - extendViewDistance;
-        int effectiveMaxX = moveX + extendViewDistance;
-        int effectiveMaxZ = moveZ + extendViewDistance;
+        int effectiveMinX   = moveX - extendViewDistance;
+        int effectiveMinZ   = moveZ - extendViewDistance;
+        int effectiveMaxX   = moveX + extendViewDistance;
+        int effectiveMaxZ   = moveZ + extendViewDistance;
+        int inServerMinX    = moveX - serverViewDistance;
+        int inServerMinZ    = moveZ - serverViewDistance;
+        int inServerMaxX    = moveX + serverViewDistance;
+        int inServerMaxZ    = moveZ + serverViewDistance;
         {
             int pointerX;
             int pointerZ;
@@ -134,7 +143,7 @@ public class ChunkMapView {
                     z = oldZ + pointerZ - 31;
 
                     // 是否已經不再範圍內
-                    if (x <= effectiveMinX || x >= effectiveMaxX || z <= effectiveMinZ || z >= effectiveMaxZ)
+                    if ((x <= effectiveMinX || x >= effectiveMaxX || z <= effectiveMinZ || z >= effectiveMaxZ) && x < inServerMinX && x > inServerMaxX && z < inServerMinZ && z > inServerMaxZ)
                         if (this.markWait(pointerX, pointerZ))
                             removeChunkKeyList[removeChunkKeyListRead++] = getChunkKey(x, z);
                 }
