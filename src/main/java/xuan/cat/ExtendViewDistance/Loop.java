@@ -486,6 +486,8 @@ public class Loop {
             }
         }
 
+        if (viewDistance < Bukkit.getViewDistance()) viewDistance = Bukkit.getViewDistance();
+
         return ++viewDistance;
     }
 
