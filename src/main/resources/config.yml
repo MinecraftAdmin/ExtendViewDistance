@@ -103,6 +103,16 @@ delayed-send-tick: 100
 
 
 # -- 繁體中文 --
+# 顯示 箱子/告示牌 之類的地圖實體
+# 僅 fast-mode: true 時生效
+# -- English --
+# Display tile entities like chest/signs
+# Only effective when fast-mode: true
+display-tile-entities: true
+
+
+
+# -- 繁體中文 --
 # 防止礦物透視作弊
 # 暴力替換, 不使用任何計算
 # -- English --

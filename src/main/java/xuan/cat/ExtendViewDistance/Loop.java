@@ -268,7 +268,7 @@ public class Loop {
 
                                 if (Value.fastMode) {
                                     // 急速模式
-                                    ExtendChunkCache chunkCache = NMS.World(playerView.world).getChunkIfRegionFile(x, z, true, true, false, false, true, false, false, false, true, false);
+                                    ExtendChunkCache chunkCache = NMS.World(playerView.world).getChunkIfRegionFile(x, z, true, true, false, false, true, false, false, Value.displayTileEntities, true, false);
 
                                     if (chunkCache != null) {
                                         // 有區塊
