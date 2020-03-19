@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import xuan.cat.XuanCatAPI.NMS;
 import xuan.cat.XuanCatAPI.Packet;
 import xuan.cat.XuanCatAPI.api.event.packet.PacketDelayedTrigger;
+import xuan.cat.XuanCatAPI.api.event.packet.ServerTileEntityDataPacketEvent;
 import xuan.cat.XuanCatAPI.api.nms.world.ExtendChunk;
 import xuan.cat.XuanCatAPI.api.nms.world.ExtendChunkCache;
 
@@ -268,7 +269,7 @@ public class Loop {
 
                                 if (Value.fastMode) {
                                     // 急速模式
-                                    ExtendChunkCache chunkCache = NMS.World(playerView.world).getChunkIfRegionFile(x, z, true, true, false, false, true, false, false, Value.displayTileEntities, true, false);
+                                    ExtendChunkCache chunkCache = NMS.World(playerView.world).getChunkIfRegionFile(x, z, true, true, false, false, true, false, false, true/*Value.displayTileEntities*/, true, false);
 
                                     if (chunkCache != null) {
                                         // 有區塊
@@ -277,12 +278,22 @@ public class Loop {
                                         for (Map.Entry<BlockData, BlockData[]> entry : Value.conversionMaterialListMap.entrySet()) {
                                             chunkCache.replaceAllMaterial(entry.getValue(), entry.getKey());
                                         }
-
+/*
+                                        // 顯示地圖實體
+                                        if (Value.displayTileEntities) {
+                                            Player player = playerView.player;
+                                            chunkCache.getTileEntityNBTMap().forEach((vector, nbtCompound) -> {
+                                                System.out.println(nbtCompound.asString());
+                                                Packet.callServerTileEntityDataPacket(player, vector, ServerTileEntityDataPacketEvent.Type.CONDUIT, nbtCompound);
+                                            });
+                                        }
+ */
                                         // 轉換為區塊
                                         chunk = chunkCache.asChunk(playerView.world);
 
                                         Packet.callServerMapChunkPacket(playerView.player, chunk, true);
                                         Packet.callServerLightUpdatePacket(playerView.player, chunk);
+
 
                                         // 除錯用
                                         if (isSendDebugList != null)

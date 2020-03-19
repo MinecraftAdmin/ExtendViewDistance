@@ -40,7 +40,7 @@ public final class Index extends JavaPlugin {
         Value.delayedSendTick                       = configuration.getInt(         "delayed-send-tick",                            100);
         Value.fastMode                              = configuration.getBoolean(     "fast-mode",                                    true);
         Value.computingPermissions                  = configuration.getBoolean(     "computing-permissions",                        true);
-        Value.displayTileEntities                   = configuration.getBoolean(     "display-tile-entities",                        true);
+        //Value.displayTileEntities                   = configuration.getBoolean(     "display-tile-entities",                        true);
         Value.backgroundDebugMode                   = configuration.getInt(         "background-debug-mode",                        0);
         Value.stressTestMode                        = configuration.getInt(         "stress-test-mode",                             0);
 
